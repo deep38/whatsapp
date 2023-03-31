@@ -1,0 +1,61 @@
+name: whatsapp
+description: A new Flutter project.
+# The following line prevents the package from being accidentally published to
+# pub.dev using `flutter pub publish`. This is preferred for private packages.
+publish_to: 'none' # Remove this line if you wish to publish to pub.dev
+
+version: 1.0.0+1
+
+environment:
+  sdk: '>=3.0.0-176.0.dev <4.0.0'
+
+# Dependencies specify other packages that your package needs in order to work.
+# To automatically upgrade your package dependencies to the latest versions
+# consider running `flutter pub upgrade --major-versions`. Alternatively,
+# dependencies can be manually updated by changing the version numbers below to
+# the latest version available on pub.dev. To see which dependencies have newer
+# versions available, run `flutter pub outdated`.
+dependencies:
+  circular_reveal_animation: ^2.0.1
+  cloud_firestore: ^4.4.4
+  contacts_service: ^0.6.3
+  cupertino_icons: ^1.0.2
+  firebase_auth: ^4.2.10
+  firebase_core: ^2.7.1
+  flutter:
+    sdk: flutter
+  path: ^1.8.3
+  path_provider: ^2.0.13
+  permission_handler: ^10.2.0
+  provider: ^6.0.5
+  sqflite: ^2.2.5
+
+dev_dependencies:
+  flutter_lints: ^2.0.0
+  flutter_test:
+    sdk: flutter
+
+flutter:
+
+  uses-material-design: true
+  assets:
+    - assets/images/
+
+  fonts:
+    - family: WhatsAppIcons
+      fonts:
+        - asset: lib/packages/whatsapp_icons/fonts/whatsapp_icons.ttf
+  # fonts:
+  #   - family: Schyler
+  #     fonts:
+  #       - asset: fonts/Schyler-Regular.ttf
+  #       - asset: fonts/Schyler-Italic.ttf
+  #         style: italic
+  #   - family: Trajan Pro
+  #     fonts:
+  #       - asset: fonts/TrajanPro.ttf
+  #       - asset: fonts/TrajanPro_Bold.ttf
+  #         weight: 700
+  #
+  # For details regarding fonts from package dependencies,
+  # see https://flutter.dev/custom-fonts/#from-packages
