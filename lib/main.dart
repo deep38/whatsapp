@@ -66,10 +66,10 @@ class MyAppState extends State<MyApp> {
         theme: AppTheme(_themeMode).data(),
         home: UserManager.isLoggedIn ? const Home() : const WelcomePage(),
 
-        // initialRoute: ,
         routes: {
           
           Routes.settings:(context) => const SettingsScreen(),
+
         },
       ),
     );
