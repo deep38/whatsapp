@@ -5,14 +5,15 @@ import 'package:whatsapp/utils/global.dart';
 
 class UserTable {
 
-  static const uid = "uid";
+  static const id = "id";
   static const name = "name";
-  static const phone = "phone";
-  static const profileUrl = "profile_url";
+  static const phone = "phoneNo";
+  static const profileUrl = "profileUrl";
+  static const about = "about";
 
   final _table = "users";
 
-  final _wherId = "${UserTable.uid} = ?";
+  final _wherId = "${UserTable.id} = ?";
 
   UserTable() {
     
@@ -20,13 +21,18 @@ class UserTable {
       Query.createTable(
         _table,
         {
-          uid: SqliteDataTypes.text,
+          id: SqliteDataTypes.text,
           name: SqliteDataTypes.varChar(25),
           phone: SqliteDataTypes.varChar(15),
           profileUrl: SqliteDataTypes.varChar(2048),
+          about: SqliteDataTypes.text
         }
       )
     );
+  }
+
+  Future<void> changeColumnName(String from, String to) async {
+    await db.rawUpdate("ALTER TABLE $_table RENAME COLUMN $from TO $to");
   }
 
   Future<int> insert(Map<String, dynamic> row) async { 
@@ -86,11 +92,30 @@ class UserTable {
     );
   }
 
+  Future<int> updateAbout(String id, String about) async {
+    return await db.update(
+      _table,
+      {
+        UserTable.about: about,
+      },
+      where: _wherId,
+      whereArgs: [id]
+    );
+  }
+
   Future<int> deleteUser(String id) async {
     return db.delete(
       _table,
       where: _wherId,
       whereArgs: [id]
+    );
+  }
+
+  Future<int> deleteAll() async {
+    return await db.delete(
+      _table,
+      where: "1 = ?",
+      whereArgs: [1],
     );
   }
 }

@@ -10,7 +10,7 @@ import 'package:whatsapp/data/database/tables/message_table.dart';
 import 'package:whatsapp/data/models/chat.dart';
 import 'package:whatsapp/presentation/pages/camera/camera.dart';
 import 'package:whatsapp/presentation/pages/device_contacts/device_contact_page.dart';
-import 'package:whatsapp/presentation/pages/home/chats/chat_list_tab.dart';
+import 'package:whatsapp/presentation/pages/home/chat_list/chat_list_page.dart';
 import 'package:whatsapp/presentation/pages/home/status/status_page.dart';
 import 'package:whatsapp/presentation/pages/home/tab_bar.dart';
 import 'package:whatsapp/presentation/pages/settings/settings.dart';

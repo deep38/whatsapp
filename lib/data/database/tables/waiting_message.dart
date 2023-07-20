@@ -25,7 +25,7 @@ class WaitingMessageTable {
           senderId: SqliteDataTypes.text,
           data: SqliteDataTypes.text,
           time: SqliteDataTypes.unsignedInt,
-          state: SqliteDataTypes.eNum(state, MessageState.values.map((messageState) => messageState.name).toList()),
+          state: SqliteDataTypes.eNum(state, MessageStatus.values.map((messageState) => messageState.name).toList()),
           chatId: SqliteDataTypes.text,
         }
       )

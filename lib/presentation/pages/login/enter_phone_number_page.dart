@@ -6,9 +6,9 @@ import 'package:whatsapp/presentation/pages/login/verify_number.dart';
 import 'package:whatsapp/presentation/widgets/login_scaffold.dart';
 import 'package:whatsapp/presentation/widgets/processing_dialog.dart';
 import 'package:whatsapp/presentation/widgets/whatsapp_elevated_button.dart';
+import 'package:whatsapp/utils/global.dart';
 
 class EnterPhoneNumberPage extends StatefulWidget {
-
   const EnterPhoneNumberPage({super.key});
 
   @override
@@ -16,11 +16,12 @@ class EnterPhoneNumberPage extends StatefulWidget {
 }
 
 class _EnterPhoneNumberPageState extends State<EnterPhoneNumberPage> {
-  final TextEditingController _countryCodeFieldController = TextEditingController(text: "91");
-  final TextEditingController _phoneNumberFieldController = TextEditingController();
+  final TextEditingController _countryCodeFieldController =
+      TextEditingController(text: "91");
+  final TextEditingController _phoneNumberFieldController =
+      TextEditingController();
 
   final ValueNotifier<bool> _validPhoneNumberNotifier = ValueNotifier(false);
-
 
   @override
   Widget build(BuildContext context) {
@@ -28,23 +29,19 @@ class _EnterPhoneNumberPageState extends State<EnterPhoneNumberPage> {
       child: LoginScaffold(
         title: "Enter your phone number",
         description: RichText(
-          textAlign: TextAlign.center,
-          text: TextSpan(
-            text: "WhatsApp need to verify your phone number. ",
-            style: Theme.of(context).textTheme.bodyMedium,
-            children: [
-              TextSpan(
-                text: "What's my number?",
-                style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                  color: Colors.blue
-                ),
-                recognizer: TapGestureRecognizer()..onTap =() {
-                  
-                }
-              )
-            ]
-          )
-        ),
+            textAlign: TextAlign.center,
+            text: TextSpan(
+                text: "WhatsApp need to verify your phone number. ",
+                style: Theme.of(context).textTheme.bodyMedium,
+                children: [
+                  TextSpan(
+                      text: "What's my number?",
+                      style: Theme.of(context)
+                          .textTheme
+                          .bodyMedium
+                          ?.copyWith(color: Colors.blue),
+                      recognizer: TapGestureRecognizer()..onTap = () {})
+                ])),
         body: Row(
           mainAxisSize: MainAxisSize.min,
           children: [
@@ -62,8 +59,9 @@ class _EnterPhoneNumberPageState extends State<EnterPhoneNumberPage> {
                   prefixStyle: Theme.of(context).textTheme.bodySmall,
                   counterText: "",
                   enabledBorder: UnderlineInputBorder(
-                    borderSide: BorderSide(color: Theme.of(context).colorScheme.primary,width: 1)
-                  ),
+                      borderSide: BorderSide(
+                          color: Theme.of(context).colorScheme.primary,
+                          width: 1)),
                 ),
               ),
             ),
@@ -74,15 +72,18 @@ class _EnterPhoneNumberPageState extends State<EnterPhoneNumberPage> {
               width: (MediaQuery.of(context).size.width * 0.7) - 80,
               child: TextField(
                 controller: _phoneNumberFieldController,
-                onChanged: _onPhoneNumberFieldTextChange,
+                inputFormatters: [SpaceFormatter()],
+                autofocus: true,
+                onChanged: _validate,
                 keyboardType: TextInputType.phone,
                 maxLength: 11,
                 decoration: InputDecoration(
                   hintText: "Phone number",
                   counterText: "",
                   enabledBorder: UnderlineInputBorder(
-                    borderSide: BorderSide(color: Theme.of(context).colorScheme.primary,width: 1)
-                  ),
+                      borderSide: BorderSide(
+                          color: Theme.of(context).colorScheme.primary,
+                          width: 1)),
                 ),
               ),
             )
@@ -95,26 +96,20 @@ class _EnterPhoneNumberPageState extends State<EnterPhoneNumberPage> {
             onPressed: isValid ? _connectAndVerify : null,
             child: const Text("NEXT"),
           ),
-        )
-      )
+        ),
+      ),
     );
   }
 
-  void _onPhoneNumberFieldTextChange(String phoneNumber) {
-    _validPhoneNumberNotifier.value = phoneNumber.length == 11 && phoneNumber.contains(RegExp(r'[0-9]{5} [0-9]{5}'));
-    if(phoneNumber.length == 6) {
-      String lastChar = phoneNumber.substring(5);
-      if(lastChar != " ") {
-        _phoneNumberFieldController.text = "${phoneNumber.substring(0, 5)} $lastChar";
-      } else {
-        _phoneNumberFieldController.text = phoneNumber.substring(0, 5);
-      }
-    }
-    _phoneNumberFieldController.selection = TextSelection.fromPosition(TextPosition(offset: _phoneNumberFieldController.text.length));
+  void _validate(String phoneNo) {
+    _validPhoneNumberNotifier.value = phoneNo.length == 11;
   }
 
   void _connectAndVerify() {
-    Future.delayed(const Duration(seconds: 1), () {Navigator.pop(context); _showNumberConfirmationDialog();});
+    Future.delayed(const Duration(seconds: 1), () {
+      Navigator.pop(context);
+      _showNumberConfirmationDialog();
+    });
     showDialog(
       context: context,
       barrierDismissible: false,
@@ -124,49 +119,87 @@ class _EnterPhoneNumberPageState extends State<EnterPhoneNumberPage> {
 
   void _showNumberConfirmationDialog() {
     showDialog(
-      barrierDismissible: false,
-      context: context,
-      builder: (context) => AlertDialog(
-        content: Column(
-          mainAxisSize: MainAxisSize.min,
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text(
-              "You entered the phone number:",
-              style: Theme.of(context).textTheme.bodySmall,
-            ),
-            const SizedBox(height: 20,),
-            Text(
-              "+${_countryCodeFieldController.text} ${_phoneNumberFieldController.text}",
-              style: Theme.of(context).textTheme.bodySmall?.copyWith(fontWeight: FontWeight.bold),
-            ),
-            const SizedBox(height: 20,),
-            Text(
-              "Is this OK, or would you like to edit the number?",
-              style: Theme.of(context).textTheme.bodySmall,
-            ),
-          ],
+        barrierDismissible: false,
+        context: context,
+        builder: (context) => AlertDialog(
+              content: Column(
+                mainAxisSize: MainAxisSize.min,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    "You entered the phone number:",
+                    style: Theme.of(context).textTheme.bodySmall,
+                  ),
+                  const SizedBox(
+                    height: 20,
+                  ),
+                  Text(
+                    "+${_countryCodeFieldController.text} ${_phoneNumberFieldController.text}",
+                    style: Theme.of(context)
+                        .textTheme
+                        .bodySmall
+                        ?.copyWith(fontWeight: FontWeight.bold),
+                  ),
+                  const SizedBox(
+                    height: 20,
+                  ),
+                  Text(
+                    "Is this OK, or would you like to edit the number?",
+                    style: Theme.of(context).textTheme.bodySmall,
+                  ),
+                ],
+              ),
+              actionsAlignment: MainAxisAlignment.spaceBetween,
+              actions: [
+                TextButton(
+                    onPressed: () {
+                      Navigator.pop(context);
+                    },
+                    child: const Text("EDIT")),
+                TextButton(
+                    onPressed: () {
+                      popAndPush(
+                        context,
+                        VerifyNumberPage(
+                          phoneNumber:
+                              "+${_countryCodeFieldController.text} ${_phoneNumberFieldController.text}",
+                        ),
+                      );
+                    },
+                    child: const Text("OK"))
+              ],
+            ));
+  }
+}
 
+class SpaceFormatter extends TextInputFormatter {
+  @override
+  TextEditingValue formatEditUpdate(
+      TextEditingValue oldValue, TextEditingValue newValue) {
+    String formattedText = newValue.text.replaceAll(" ", "");
+    int baseOffset = newValue.selection.baseOffset;
+    debugPrint("$baseOffset");
+
+    if (formattedText.length > 5) {
+      formattedText =
+          "${formattedText.substring(0, 5)} ${formattedText.substring(5)}";
+    }
+
+    if (baseOffset == 6) {
+      if (newValue.text.length > oldValue.text.length) {
+        baseOffset++;
+      } else {
+        baseOffset--;
+      }
+    }
+
+    return TextEditingValue(
+      text: formattedText,
+      selection: TextSelection.fromPosition(
+        TextPosition(
+          offset: baseOffset,
         ),
-        actionsAlignment: MainAxisAlignment.spaceBetween,
-        actions: [
-          TextButton(
-            onPressed: (){
-              Navigator.pop(context);
-            },
-            child: const Text("EDIT")
-          ),
-          TextButton(
-            onPressed: (){
-              Navigator.push(
-                context,
-                MaterialPageRoute(builder: (context) => VerifyNumberPage(phoneNumber: "+${_countryCodeFieldController.text} ${_phoneNumberFieldController.text}")),
-              );
-            },
-            child: const Text("OK")
-          )
-        ],
-      )
+      ),
     );
   }
 }

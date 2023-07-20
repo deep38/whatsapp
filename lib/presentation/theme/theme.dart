@@ -48,11 +48,15 @@ class AppTheme {
       ],
       
       listTileTheme: ListTileThemeData(
+        titleTextStyle: TextStyle(
+          color: _themeColors.text,
+          fontSize: 18,
+          fontWeight: FontWeight.w500
+        ),
         tileColor: _themeColors.listTile,
         selectedColor: _themeColors.selectedTile,
-        
+        minVerticalPadding: 24
       ),
-
       dialogTheme: DialogTheme(
         backgroundColor: _themeColors.dialogBackground,
       ),

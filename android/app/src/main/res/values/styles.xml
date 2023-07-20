@@ -17,4 +17,13 @@
     <style name="NormalTheme" parent="@android:style/Theme.Light.NoTitleBar">
         <item name="android:windowBackground">?android:colorBackground</item>
     </style>
+
+    <style name="CropImageTheme" parent="Theme.AppCompat.NoActionBar">
+        <!-- Customize your theme here -->
+        <!-- Example: Changing the colorPrimary attribute -->
+        <item name="colorPrimary">#FF4081</item>
+        <item name="colorPrimaryDark">#E91E63</item>
+        <item name="colorAccent">#FF4081</item>
+        <!-- Add more customizations as needed -->
+    </style>
 </resources>

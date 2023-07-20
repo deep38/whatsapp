@@ -1,17 +1,11 @@
 import 'package:flutter/material.dart';
-import 'package:whatsapp/data/database/tables/chat_table.dart';
-import 'package:whatsapp/data/database/tables/message_table.dart';
-import 'package:whatsapp/data/firebase/firestore_helper.dart';
-import 'package:whatsapp/data/info.dart';
 import 'package:whatsapp/data/models/chat.dart';
 import 'package:whatsapp/data/models/message.dart';
 import 'package:whatsapp/data/models/user.dart';
-import 'package:whatsapp/packages/whatsapp_icons/lib/whatsapp_icons.dart';
-import 'package:whatsapp/presentation/pages/conversation/conversation_page.dart';
-import 'package:whatsapp/utils/global.dart';
-import '../../../../../utils/mapers/asset_images.dart';
+import 'package:whatsapp/presentation/pages/chatting/chatting_page.dart';
 import 'package:whatsapp/presentation/widgets/list_tile.dart';
 import 'package:whatsapp/presentation/widgets/profile_photo.dart';
+import 'package:whatsapp/utils/mapers/asset_images.dart';
 
 class ChatListTile extends StatefulWidget {
   final Chat chat;
@@ -46,8 +40,8 @@ class _ChatListTileState extends State<ChatListTile> {
     _lastMessageChangeNotifier
         .addListener((() => widget.onNewMessageSent(widget.chat)));
 
-    assert(widget.chat.users.isNotEmpty);
-    _whatsAppUser = widget.chat.users[0];
+    assert(widget.chat.participants.isNotEmpty);
+    _whatsAppUser = widget.chat.participants[0];
   }
 
   @override
@@ -105,7 +99,7 @@ class _ChatListTileState extends State<ChatListTile> {
     Navigator.push(
       context,
       MaterialPageRoute(
-        builder: (context) => ConversationPage(
+        builder: (context) => ChattingPage(
           user: _whatsAppUser,
           chat: widget.chat,
           lastMessageChangeNotifier: _lastMessageChangeNotifier,

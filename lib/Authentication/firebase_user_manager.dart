@@ -1,6 +1,9 @@
 
+import 'dart:typed_data';
+
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_storage/firebase_storage.dart';
 import 'package:whatsapp/data/models/user.dart';
 
 // FirebaseAuth.instance.currentUser;
@@ -11,13 +14,19 @@ class UserManager {
   
   static bool get isLoggedIn => user != null;
 
-  static Future<String?> createUser(String name) async {
+  static Future<void> createUser(Uint8List? profileImage, String name) async {
     if(user != null) {
+      final profilePhotoUrl = profileImage != null ? await(await FirebaseStorage.instance.ref("profileimages/$phoneNumber").putData(profileImage)).ref.getDownloadURL() : null;
       await user?.updateDisplayName(name);
-      await _firestore.collection("users").doc(user!.phoneNumber).set(WhatsAppUser.fromFiebaseUser(user!).toMap());
-      return null;
+      await user?.updatePhotoURL(profilePhotoUrl);
+      final availabelUser = (await _firestore.collection("users").where('phoneNo', isEqualTo: phoneNumber).get()).docs;
+      if(availabelUser.isNotEmpty) {
+        await _firestore.collection("users").doc(availabelUser.first.id).set(WhatsAppUser.fromFiebaseUser(user!).toMap(), SetOptions(merge: true));
+      } else {
+        await _firestore.collection("users").add(WhatsAppUser.fromFiebaseUser(user!).toMap());
+      }
     } else {
-      return "User not logged in";
+      throw Exception("User not logged in");
     }
   }
 
@@ -42,6 +51,8 @@ class UserManager {
   static String? get uid => user?.uid;
 
   static String? get displayName => user?.displayName;
+
+  static String? get phoneNumber => user?.phoneNumber;
 
   static String? get photoURL => user?.photoURL;
 }

@@ -1,7 +1,9 @@
 enum ChatType {onetoone, group, broadcast, community}
 
-enum MessageType {sent, received}
+enum MessageType { text, image, audio, video, link, contacts, }
 
-enum MessageState { waiting, sending, sent, received, viewed, failed,}
+enum MessageStatus { waiting, sending, sent, received, seen, failed,}
 
 enum HomeActionBarMoreOptions { newGroup, newBroadcast, linkedDevices, starredMessages, settings}
+
+enum UserStatus {online, offline}

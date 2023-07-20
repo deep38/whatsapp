@@ -2,10 +2,15 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:image_picker/image_picker.dart';
 import 'package:provider/provider.dart';
 import 'package:whatsapp/Authentication/firebase_user_manager.dart';
 import 'package:whatsapp/data/database/database_helper.dart';
+import 'package:whatsapp/presentation/pages/chatting/chatting_page.dart';
+import 'package:whatsapp/presentation/pages/device_contacts/device_contact_page.dart';
 import 'package:whatsapp/presentation/pages/home/home.dart';
+import 'package:whatsapp/presentation/pages/login/add_profile_info_page.dart';
+import 'package:whatsapp/presentation/pages/login/enter_phone_number_page.dart';
 import 'package:whatsapp/presentation/pages/login/welcome_page.dart';
 import 'package:whatsapp/presentation/pages/settings/settings.dart';
 import 'package:whatsapp/presentation/providers/select_count_provider.dart';
@@ -64,7 +69,7 @@ class MyAppState extends State<MyApp> {
       child: MaterialApp(
         title: 'Flutter Demo',
         theme: AppTheme(_themeMode).data(),
-        home: UserManager.isLoggedIn ? const Home() : const WelcomePage(),
+        home: UserManager.isLoggedIn ?  const Home() : const WelcomePage(),
 
         // initialRoute: ,
         routes: {

@@ -8,7 +8,8 @@ class ThemeColors {
   final Color onPrimary = Colors.white;
 
   final Color text = Colors.black;
-  final Color secondaryText = const Color(0xff687983);
+  // final Color secondaryText = const Color(0xff687983);
+  final Color secondaryText = const Color.fromARGB(255, 173, 185, 192);
 
   final Color tabIndicator = Colors.white;
   final Color tabHighlight = Colors.white;

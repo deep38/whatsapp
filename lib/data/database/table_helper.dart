@@ -23,7 +23,7 @@ class TableHelper {
     
     for(Chat chat in chats) {
       Chat newChat = await getChatById(chat.id, chat.type);
-      chat.setUsers(newChat.users);
+      chat.setUsers(newChat.participants);
       chat.setMessages(newChat.messages);
     }
 
@@ -42,8 +42,8 @@ class TableHelper {
       }
     }
 
-      List<Message> messages = (await _messageTable.getAllForChat(id)).map((e) => Message.fromMessageTableRow(e)).toList();
-      List<Message> waitingMessages = (await _waitingMessageTable.getAllForChat(id)).map((e) => Message.fromMessageTableRow(e)).toList();
+      List<Message> messages = (await _messageTable.getAllForChat(id)).map((e) => Message.fromMap(e)).toList();
+      List<Message> waitingMessages = (await _waitingMessageTable.getAllForChat(id)).map((e) => Message.fromMap(e)).toList();
       debugPrint("Messages: ${messages.length}");
       debugPrint("WaitingMessages: ${waitingMessages.length}");
       int i = 0, j = 0;
@@ -61,12 +61,12 @@ class TableHelper {
         messages.add(waitingMessages[j]);
         j++;
       }
-      return Chat(id: id, users: users, messages: messages, type: type ?? ChatType.onetoone);
+      return Chat(id: id, participants: users, messages: messages, type: type ?? ChatType.onetoone);
   }
 
   Future<void> createNewChat(Chat chat, WhatsAppUser user) async {
-    await _chatTable.insert(chat.toChatTableRow());
-    await _chatUsersTable.insert({ChatUsersTable.chatId: chat.id, ChatUsersTable.userId: user.uid});
+    await _chatTable.insert(chat.toMapForStore());
+    await _chatUsersTable.insert({ChatUsersTable.chatId: chat.id, ChatUsersTable.userId: user.id});
     await _userTable.insert(user.toTableRow());
   }
 

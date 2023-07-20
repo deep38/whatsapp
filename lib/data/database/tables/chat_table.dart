@@ -66,4 +66,12 @@ class ChatTable {
       whereArgs: [id],
     );
   }
+
+  Future<int> deleteAll() async {
+    return await db.delete(
+      _table,
+      where: "1 = ?",
+      whereArgs: [1],
+    );
+  }
 }

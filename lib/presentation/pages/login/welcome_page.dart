@@ -64,7 +64,7 @@ class WelcomePage extends StatelessWidget {
               ),
               const SizedBox(height: 20,),
               WhatsAppElevatedButton(
-                onPressed: () => _goToEnterPhoneNumber(context),
+                onPressed: () => navigateTo(context, const EnterPhoneNumberPage()),
                 child: const Text(
                   "AGREE AND CONTINUE",
                 )
@@ -72,14 +72,6 @@ class WelcomePage extends StatelessWidget {
             ],
           ),
         ),
-      )
-    );
-  }
-
-  void _goToEnterPhoneNumber(context) {
-    Navigator.push(
-      context, MaterialPageRoute(
-        builder: (context) => const EnterPhoneNumberPage()
       )
     );
   }

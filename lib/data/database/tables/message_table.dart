@@ -7,13 +7,13 @@ class MessageTable {
 
   static const id = "id";
   static const data = "data";
-  static const senderId = "sender_id";
+  static const senderId = "senderId";
   static const time = "time";
-  static const state = "state";
-  static const chatId = "chat_id";
+  static const status = "status";
+  static const chatId = "chatId";
 
   final _table = "messages";
-  final _wherId = "${MessageTable.id} = ?";
+  final _whereId = "${MessageTable.id} = ?";
 
   MessageTable() {
     
@@ -25,7 +25,7 @@ class MessageTable {
           senderId: SqliteDataTypes.text,
           data: SqliteDataTypes.text,
           time: SqliteDataTypes.unsignedInt,
-          state: SqliteDataTypes.eNum(state, MessageState.values.map((messageState) => messageState.name).toList()),
+          status: SqliteDataTypes.eNum(status, MessageStatus.values.map((messageState) => messageState.name).toList()),
           chatId: SqliteDataTypes.text,
         }
       )
@@ -54,17 +54,17 @@ class MessageTable {
   }
 
   Future<int> update(Map<String, dynamic> data) async {
-    return await db.update(_table, data, where: _wherId, whereArgs: [data['id']]);
+    return await db.update(_table, data, where: _whereId, whereArgs: [data['id']]);
   }
 
-  Future<int> updateState(String id, String state) async {
+  Future<int> updateStatus(String chatId, String messageId, String status) async {
     return await db.update(
       _table,
       {
-        MessageTable.state: state,
+        MessageTable.status: status,
       },
-      where: _wherId,
-      whereArgs: [id]
+      where: _whereId,
+      whereArgs: [messageId]
     );
   }
 
@@ -74,8 +74,19 @@ class MessageTable {
       {
         MessageTable.data: data,
       },
-      where: _wherId,
+      where: _whereId,
       whereArgs: [id],
+    );
+  }
+
+  Future<int> updateId(String oldId, String newId) {
+    return db.update(
+      _table,
+      {
+        MessageTable.chatId: newId
+      },
+      where: "${MessageTable.id} = ?",
+      whereArgs: [oldId]
     );
   }
 
@@ -86,7 +97,7 @@ class MessageTable {
         MessageTable.chatId: newChatId
       },
       where: "${MessageTable.chatId} = ?",
-      whereArgs: [newChatId]
+      whereArgs: [oldChatId]
     );
   }
 
@@ -95,6 +106,14 @@ class MessageTable {
       _table,
       where: "${MessageTable.chatId} = ?",
       whereArgs: [chatId]
+    );
+  }
+
+  Future<int> deleteAll() async {
+    return await db.delete(
+      _table,
+      where: "1 = ?",
+      whereArgs: [1],
     );
   }
 }

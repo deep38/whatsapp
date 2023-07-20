@@ -7,8 +7,8 @@ class ChatUsersTable {
 
   final String _table = "chat_users";
 
-  static const String chatId = "chat_id";
-  static const String userId = "user_id";
+  static const String chatId = "chatId";
+  static const String userId = "userId";
 
   ChatUsersTable() {
     db.execute(
@@ -80,6 +80,14 @@ class ChatUsersTable {
       _table,
       where: "${ChatUsersTable.userId} = ? AND ${ChatUsersTable.chatId} = ?",
       whereArgs: [userId, chatId],
+    );
+  }
+
+  Future<int> deleteAll() async {
+    return await db.delete(
+      _table,
+      where: "1 = ?",
+      whereArgs: [1],
     );
   }
 }

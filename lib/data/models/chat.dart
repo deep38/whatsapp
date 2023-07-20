@@ -1,6 +1,7 @@
 // ignore_for_file: public_member_api_docs, sort_constructors_first
 import 'dart:convert';
 
+import 'package:equatable/equatable.dart';
 import 'package:flutter/foundation.dart';
 
 import 'package:whatsapp/data/database/tables/chat_table.dart';
@@ -9,15 +10,15 @@ import 'package:whatsapp/utils/enums.dart';
 
 import 'message.dart';
 
-class Chat {
+class Chat extends Equatable{
   String id;
-  List<WhatsAppUser> users;
+  List<WhatsAppUser> participants;
   List<Message> messages;
   ChatType type;
 
   Chat({
     required this.id,
-    required this.users,
+    required this.participants,
     required this.messages,
     required this.type,
   });
@@ -25,13 +26,13 @@ class Chat {
 
   Chat copyWith({
     String? id,
-    List<WhatsAppUser>? users,
+    List<WhatsAppUser>? participants,
     List<Message>? messages,
     ChatType? type,
   }) {
     return Chat(
       id: id ?? this.id,
-      users: users ?? this.users,
+      participants: participants ?? this.participants,
       messages: messages ?? this.messages,
       type: type ?? this.type,
     );
@@ -39,20 +40,20 @@ class Chat {
 
   void setId(String id) => this.id = id;
 
-  void setUsers(List<WhatsAppUser> users) => this.users = users;
+  void setUsers(List<WhatsAppUser> participants) => this.participants = participants;
  
   void setMessages(List<Message> messages) => this.messages = messages;
 
   Map<String, dynamic> toMap() {
     return <String, dynamic>{
       'id': id,
-      'users': users.map((e) => e.uid).toList(),
+      'users': participants.map((e) => e.id).toList(),
       'messages': messages.map((x) => x.toMap()).toList(),
       'type': type.name,
     };
   }
 
-  Map<String, dynamic> toChatTableRow() {
+  Map<String, dynamic> toMapForStore() {
     return <String, dynamic>{
       ChatTable.id: id,
       ChatTable.type: type.name,
@@ -62,7 +63,7 @@ class Chat {
   factory Chat.fromMap(Map<String, dynamic> map) {
     return Chat(
       id: map['id'] as String,
-      users: List<WhatsAppUser>.from((map['users'] as List<Map<String, dynamic>>).map((e) => WhatsAppUser.fromMap(e),),),
+      participants: List<WhatsAppUser>.from((map['users'] as List<Map<String, dynamic>>).map((e) => WhatsAppUser.fromMap(e),),),
       messages: List<Message>.from((map['messages'] as List<Map<String, dynamic>>).map<Message>((x) => Message.fromMap(x),),),
       type: ChatType.values.firstWhere((element) => element.name == map['type']),
     );
@@ -71,7 +72,7 @@ class Chat {
   factory Chat.fromChatTableRow(Map<String, dynamic> row) {
     return Chat(
       id: row[ChatTable.id],
-      users: [],
+      participants: [],
       messages: [],
       type: ChatType.values.firstWhere((element) => element.name == row[ChatTable.type]),
     );
@@ -80,9 +81,9 @@ class Chat {
   factory Chat.fromFirebaseMap(String id, Map<String, dynamic> data) {
     return Chat(
       id: id,
-      users: data['users'] as List<String>,
+      participants: [],
       messages: [],
-      type: ChatType.values.firstWhere((element) => element.name == row[ChatTable.type]),
+      type: ChatType.values.firstWhere((element) => element.name == data[ChatTable.type]),
     );
   }
 
@@ -92,7 +93,7 @@ class Chat {
 
   @override
   String toString() {
-    return 'Chat(id: $id, users: $users, messages: $messages, type: $type)';
+    return 'Chat(id: $id, users: $participants, messages: $messages, type: $type)';
   }
 
   // @override
@@ -113,9 +114,12 @@ class Chat {
   }
 
   @override
+  List<Object?> get props => [id, type];
+
+  @override
   int get hashCode {
     return id.hashCode ^
-      users.hashCode ^
+      participants.hashCode ^
       messages.hashCode ^
       type.hashCode;
   }

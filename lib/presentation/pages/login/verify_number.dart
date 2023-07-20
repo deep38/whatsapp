@@ -1,3 +1,4 @@
+import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:whatsapp/Authentication/firebase_phone_auth.dart';
 import 'package:whatsapp/presentation/pages/login/add_profile_info_page.dart';
@@ -22,7 +23,7 @@ class _VerifyNumberPageState extends State<VerifyNumberPage> {
   @override
   void initState() {
     super.initState();
-    // _requestForOtp();
+    WidgetsBinding.instance.addPostFrameCallback((timeStamp) {_requestForOtp();});
   }
   @override
   Widget build(BuildContext context) {
@@ -48,19 +49,20 @@ class _VerifyNumberPageState extends State<VerifyNumberPage> {
                 text: "Wrong number?",
                 style: Theme.of(context).textTheme.bodyMedium?.copyWith(
                   color: Colors.blue,
-                )
+                ),
+                recognizer: TapGestureRecognizer()..onTap = () => Navigator.pop(context),
               )
             ]
           ),
         ),
-        body: TextField(
-          maxLength: 6,
-          keyboardType: TextInputType.number,
-          onChanged: _onOtpChange,
-        ),
-        // body: OtpField(
-        //   onFilled: (otp) => _verifyOtp(context, otp),
+        // body: TextField(
+        //   maxLength: 6,
+        //   keyboardType: TextInputType.number,
+        //   onChanged: _onOtpChange,
         // ),
+        body: OtpField(
+          onFilled: (otp) => _verifyOtp(context, otp),
+        ),
         hint: "Enter 6-digit code",
         footer: TextButton(
           onPressed: _requestForOtp,
@@ -89,7 +91,7 @@ class _VerifyNumberPageState extends State<VerifyNumberPage> {
     _firebasePhoneAuth.verifySMSCode(
       otp,
       () => Navigator.push(context, MaterialPageRoute(
-        builder: (context) => AddProfileInfoPage()
+        builder: (context) => const AddProfileInfoPage()
         )
       ),
       (error) {
@@ -110,7 +112,7 @@ class _VerifyNumberPageState extends State<VerifyNumberPage> {
   void _showVerifyingDialog() {
     showDialog(
       context: context,
-      builder: (context) => const ProcessingDialog(message: "Verifynig...")
+      builder: (context) => const ProcessingDialog(message: "Verifynig..."),
     );
   }
 }

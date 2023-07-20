@@ -10,38 +10,29 @@ class Message {
   String data;
   String senderId;
   int time;
-  MessageState? state;
+  MessageStatus status;
 
   Message({
     required this.id,
     required this.data,
     required this.senderId,
     required this.time,
-    this.state,
+    required this.status,
   });
-
-  Message.fromString({
-    required this.id,
-    required this.data,
-    required this.time,
-    required this.senderId,
-    required String state,
-  }) :
-    state = _getMessageStateFromString(state);
 
   Message copyWith({
     String? id,
     String? data,
     String? senderId,
     int? time,
-    MessageState? state,
+    MessageStatus? status,
   }) {
     return Message(
       id: id ?? this.id,
       data: data ?? this.data,
       senderId: senderId ?? this.senderId,
       time: time ?? this.time,
-      state: state ?? this.state
+      status: status ?? this.status
     );
   }
 
@@ -51,7 +42,18 @@ class Message {
       'data': data,
       'senderId': senderId,
       'time': time,
-      'state': state?.name,
+      'status': status.name,
+    };
+  }
+
+   Map<String, dynamic> toTableRow(String roomId) {
+    return <String, dynamic>{
+      'id': id,
+      'data': data,
+      'senderId': senderId,
+      'time': time,
+      'status': status.name,
+      MessageTable.chatId: roomId,
     };
   }
 
@@ -60,48 +62,17 @@ class Message {
       'data': data,
       'senderId': senderId,
       'time': time,
-      'state': state?.name,
+      'status': status.name,
     };
   }
 
-  Map<String, dynamic> toMessageTableRow(String chatId) {
-    return {
-      MessageTable.id : id,
-      MessageTable.senderId : senderId,
-      MessageTable.data : data,
-      MessageTable.time : time,
-      MessageTable.state : state?.name ?? "null",
-      MessageTable.chatId : chatId,
-    };
-  }
-
-  factory Message.fromMap(Map<String, dynamic> map) {
+  factory Message.fromMap(Map<String, dynamic> map, [String? id]) {
     return Message(
-      id: map['id'] as String,
+      id: id ?? map['id'] as String,
       data: map['data'] as String,
       senderId: map['senderId'] as String,
       time: map['time'] as int,
-      state: map['state']
-    );
-  }
-
-  factory Message.fromMessageTableRow(Map<String, dynamic> row) {
-    return Message.fromString(
-      id: row[MessageTable.id], 
-      senderId: row[MessageTable.senderId], 
-      data: row[MessageTable.data], 
-      time: row[MessageTable.time],
-      state: row[MessageTable.state],
-    );
-  }
-
-  factory Message.fromFirebaseMap(String id, Map<String, dynamic> row) {
-    return Message.fromString(
-      id: id, 
-      senderId: row['senderId'], 
-      data: row['data'], 
-      time: row['time'],
-      state: row['state'],
+      status: MessageStatus.values.firstWhere((element) => element.name == map['status'])
     );
   }
 
@@ -111,11 +82,11 @@ class Message {
 
   @override
   String toString() {
-    return 'Message(id: $id, data: $data, senderId: $senderId, time: $time, state: ${state?.name??"Null"})';
+    return 'Message(id: $id, data: $data, senderId: $senderId, time: $time, state: $status)';
   }
 
   bool isUpdated(covariant Message other) {
-    return other.data != data || other.state != state;
+    return other.data != data || other.status != status;
   }
 
   @override
@@ -140,15 +111,7 @@ class Message {
     this.id = id;
   }
 
-  void updateState(MessageState? state) {
-    this.state = state;
-  }
-
-  static MessageState? _getMessageStateFromString(String state) {
-    if(state.isEmpty || state == "null") return null;
-
-    return MessageState.values.firstWhere(
-      (messagegState) => messagegState.name == state,
-    );
+  void updateStatus(MessageStatus status) {
+    this.status = status;
   }
 }

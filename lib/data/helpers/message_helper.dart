@@ -9,7 +9,7 @@ import 'package:whatsapp/utils/enums.dart';
 
 abstract class MessageCallbacks {
   void onMessageSent(String id);
-  void onMessageStateUpdate(MessageState? state);
+  void onMessageStatusUpdate(MessageStatus? state);
   void onMessageDataUpdate(String data);
   void onMessageDeleted();
 }
@@ -18,10 +18,10 @@ class MessageHelper {
 
   MessageHelper({required this.message, this.roomId, required this.messageCallbacks, this.roomIdStream}) {
     
-    if(message.state == MessageState.waiting) {
-      sendMessage();
-    } else if(message.state != MessageState.sending) {
-      _listenForUpdates();
+    if(message.status == MessageStatus.waiting) {
+      // sendMessage();
+    } else if(message.status != MessageStatus.sending) {
+      // _listenForUpdates();
     }
   }
   
@@ -34,58 +34,57 @@ class MessageHelper {
   final MessageTable _messageTable = MessageTable();
   final WaitingMessageTable _waitingMessageTable = WaitingMessageTable();
 
-  void sendMessage() async {
+  // void sendMessage() async {
 
-    if(roomId == null) {
-      _listenForRoomId();
-      return;
-    }
-    _waitingMessageTable.insert(message.toMessageTableRow(roomId!));
+  //   if(roomId == null) {
+  //     _listenForRoomId();
+  //     return;
+  //   }
+  //   _waitingMessageTable.insert(message.toTableRow(roomId!));
 
-    message.updateState(MessageState.sending);
-    String messageId = (await _firestore.collection(FirestoreCollection.chats)
-      .doc(roomId)
-      .collection(FirestoreCollection.messages)
-      .add(message.toMapWithoutId())).id;
+  //   message.updateStatus(MessageStatus.sending);
+  //   String messageId = (await _firestore.collection(FirestoreCollection.chats)
+  //     .doc(roomId)
+  //     .collection(FirestoreCollection.messages)
+  //     .add(message.toMapWithoutId())).id;
     
-    _waitingMessageTable.delete(message.id);
-    message.setId(messageId);
-    _messageTable.insert(message.toMessageTableRow(roomId!));
-    messageCallbacks.onMessageSent(messageId);
-    _listenForUpdates();
-  }
+  //   _waitingMessageTable.delete(message.id);
+  //   message.setId(messageId);
+  //   _messageTable.insert(message.toTableRow(roomId!));
+  //   messageCallbacks.onMessageSent(messageId);
+  //   _listenForUpdates();
+  // }
 
 
   void _listenForRoomId() {
     roomIdStream?.stream.listen((roomId) {
       this.roomId = roomId;
-      sendMessage();
     });
   }
 
-  void _listenForUpdates() {
-    _firestore.collection(FirestoreCollection.chats)
-      .doc(roomId)
-      .collection(FirestoreCollection.messages)
-      .doc(message.id)
-      .snapshots()
-      .listen(_onUpdate);
-  }
+  // void _listenForUpdates() {
+  //   _firestore.collection(FirestoreCollection.chats)
+  //     .doc(roomId)
+  //     .collection(FirestoreCollection.messages)
+  //     .doc(message.id)
+  //     .snapshots()
+  //     .listen(_onUpdate);
+  // }
 
-  void _onUpdate(messageSnapshot) {
-    if(messageSnapshot.data() == null) return;
+  // void _onUpdate(messageSnapshot) {
+  //   if(messageSnapshot.data() == null) return;
 
-    Message message = Message.fromFirebaseMap(messageSnapshot.id, messageSnapshot.data()!);
-    if(this.message.state != message.state) {
-      _updateState(message.state);
-    } else if(this.message.data != message.data) {
-      messageCallbacks.onMessageDataUpdate(message.data);
-    }
-  }
+  //   Message message = Message.fromMap(messageSnapshot.data()!, messageSnapshot.id);
+  //   if(this.message.status != message.status) {
+  //     _updateState(message.status);
+  //   } else if(this.message.data != message.data) {
+  //     messageCallbacks.onMessageDataUpdate(message.data);
+  //   }
+  // }
 
-  void _updateState(MessageState? state) {
-    messageCallbacks.onMessageStateUpdate(state);
-    message.updateState(state);
-    _messageTable.updateState(message.id, state?.name ?? "null");
-  }
+  // void _updateState(MessageStatus state) {
+  //   messageCallbacks.onMessageStatusUpdate(state);
+  //   message.updateStatus(state);
+  //   _messageTable.updateStatus(, message.id, state.name);
+  // }
 }
