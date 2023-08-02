@@ -31,7 +31,7 @@ samples, guidance on mobile development, and a full API reference.
   }
 </style>
 <div class="image-container">
-<img src="./screenshots/Screenshot_1690977540.png" alt="Screenshot 1" />
+<img height="100px" src="./screenshots/Screenshot_1690977540.png" alt="Screenshot 1" />
 <img src="./screenshots/Screenshot_1690977594.png" alt="Screenshot 2" />
 <img src="./screenshots/Screenshot_1690977599.png" alt="Screenshot 3" />
 <img src="./screenshots/Screenshot_1690977698.png" alt="Screenshot 4" />
