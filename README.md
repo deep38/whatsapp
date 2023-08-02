@@ -17,6 +17,7 @@ samples, guidance on mobile development, and a full API reference.
 
 ## Screenshots
 
+<<<<<<< HEAD
 <div style='display: flex;'>
 <img src="./screenshots/Screenshot_1690977540.png" alt="Screenshot 1" />
 <img src="./screenshots/Screenshot_1690977594.png" alt="Screenshot 2" />
@@ -24,3 +25,12 @@ samples, guidance on mobile development, and a full API reference.
 <img src="./screenshots/Screenshot_1690977698.png" alt="Screenshot 4" />
 <img src="./screenshots/Screenshot_1690983601.png" alt="Screenshot 5" />
 </div>
+=======
+<img height="300px" style="margin-right: 14px;" src="./screenshots/Screenshot_1690977540.png" alt="Screenshot 1" /> &nbsp; &nbsp; 
+<img height="300px" style="margin-right: 14px;" src="./screenshots/Screenshot_1690977594.png" alt="Screenshot 2" /> &nbsp; &nbsp; 
+<img height="300px" style="margin-right: 14px;" src="./screenshots/Screenshot_1690977599.png" alt="Screenshot 3" /> &nbsp; &nbsp; 
+<img height="300px" style="margin-right: 14px;" src="./screenshots/Screenshot_1690977698.png" alt="Screenshot 4" /> &nbsp; &nbsp; 
+<img height="300px" style="margin-right: 14px;" src="./screenshots/Screenshot_1690983601.png" alt="Screenshot 5" /> &nbsp; &nbsp; 
+
+
+>>>>>>> 97d176d88a58b415f1a4a285fea13f32bc7a8ad6
