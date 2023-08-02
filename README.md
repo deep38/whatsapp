@@ -16,6 +16,7 @@ For help getting started with Flutter development, view the
 samples, guidance on mobile development, and a full API reference.
 
 ## Screenshots
+<html>
 <style>
   .image-container {
     display: flex;
@@ -37,5 +38,5 @@ samples, guidance on mobile development, and a full API reference.
 <img src="./screenshots/Screenshot_1690977698.png" alt="Screenshot 4" />
 <img src="./screenshots/Screenshot_1690983601.png.png" alt="Screenshot 5" />
 </div>
-
+</html>
 >>>>>>> 17fdf20bef3abaf96659368713233a91ef0dadea
