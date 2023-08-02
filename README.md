@@ -18,11 +18,10 @@ samples, guidance on mobile development, and a full API reference.
 ## Screenshots
 
 <div class="image-container" style="display: flex; flex-wrap: wrap; max-height: 200px; margin-bottom: 10px;">
-<img height="300px" src="./screenshots/Screenshot_1690977540.png" alt="Screenshot 1" />
-<img height="300px"  src="./screenshots/Screenshot_1690977594.png" alt="Screenshot 2" />
-<img height="300px"  src="./screenshots/Screenshot_1690977599.png" alt="Screenshot 3" />
-<img height="300px"  src="./screenshots/Screenshot_1690977698.png" alt="Screenshot 4" />
-<img height="300px"  src="./screenshots/Screenshot_1690983601.png.png" alt="Screenshot 5" />
+<img height="300px" style="margin-right: 14px;" src="./screenshots/Screenshot_1690977540.png" alt="Screenshot 1" />
+<img height="300px" style="margin-right: 14px;" src="./screenshots/Screenshot_1690977594.png" alt="Screenshot 2" />
+<img height="300px" style="margin-right: 14px;" src="./screenshots/Screenshot_1690977599.png" alt="Screenshot 3" />
+<img height="300px" style="margin-right: 14px;" src="./screenshots/Screenshot_1690977698.png" alt="Screenshot 4" />
+<img height="300px" style="margin-right: 14px;" src="./screenshots/Screenshot_1690983601.png" alt="Screenshot 5" />
 </div>
 
->>>>>>> 17fdf20bef3abaf96659368713233a91ef0dadea
