@@ -25,7 +25,7 @@ samples, guidance on mobile development, and a full API reference.
   }
 
   .image-container img {
-    max-height: 100%; /* Images will adjust their height to fit the container */
+    max-height: 100px; /* Images will adjust their height to fit the container */
     max-width: 100%; /* Images will scale proportionally */
     margin-right: 5px;
   }
@@ -35,7 +35,7 @@ samples, guidance on mobile development, and a full API reference.
 <img src="./screenshots/Screenshot_1690977594.png" alt="Screenshot 2" />
 <img src="./screenshots/Screenshot_1690977599.png" alt="Screenshot 3" />
 <img src="./screenshots/Screenshot_1690977698.png" alt="Screenshot 4" />
-<img src="./screenshots/Screenshot_1690977601.png" alt="Screenshot 5" />
+<img src="./screenshots/Screenshot_1690983601.png.png" alt="Screenshot 5" />
 </div>
 
 >>>>>>> 17fdf20bef3abaf96659368713233a91ef0dadea
