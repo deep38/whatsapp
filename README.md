@@ -16,14 +16,26 @@ For help getting started with Flutter development, view the
 samples, guidance on mobile development, and a full API reference.
 
 ## Screenshots
+<style>
+  .image-container {
+    display: flex;
+    flex-wrap: wrap;
+    max-height: 200px; /* Set the specific height you want for each image */
+    margin-bottom: 10px;
+  }
 
-<<<<<<< HEAD
+  .image-container img {
+    max-height: 100%; /* Images will adjust their height to fit the container */
+    max-width: 100%; /* Images will scale proportionally */
+    margin-right: 5px;
+  }
+</style>
+<div class="image-container">
 <img src="./screenshots/Screenshot_1690977540.png" alt="Screenshot 1" />
 <img src="./screenshots/Screenshot_1690977594.png" alt="Screenshot 2" />
 <img src="./screenshots/Screenshot_1690977599.png" alt="Screenshot 3" />
 <img src="./screenshots/Screenshot_1690977698.png" alt="Screenshot 4" />
 <img src="./screenshots/Screenshot_1690977601.png" alt="Screenshot 5" />
-=======
-<img src="" alt="Screenshot 1" />
+</div>
 
 >>>>>>> 17fdf20bef3abaf96659368713233a91ef0dadea
