@@ -17,13 +17,10 @@ samples, guidance on mobile development, and a full API reference.
 
 ## Screenshots
 
-<<<<<<< HEAD
+<div style='display: flex;'>
 <img src="./screenshots/Screenshot_1690977540.png" alt="Screenshot 1" />
 <img src="./screenshots/Screenshot_1690977594.png" alt="Screenshot 2" />
 <img src="./screenshots/Screenshot_1690977599.png" alt="Screenshot 3" />
 <img src="./screenshots/Screenshot_1690977698.png" alt="Screenshot 4" />
-<img src="./screenshots/Screenshot_1690977601.png" alt="Screenshot 5" />
-=======
-<img src="" alt="Screenshot 1" />
-
->>>>>>> 17fdf20bef3abaf96659368713233a91ef0dadea
+<img src="./screenshots/Screenshot_1690983601.png" alt="Screenshot 5" />
+</div>
