@@ -7,6 +7,7 @@ class WhatsAppElevatedButton extends StatelessWidget {
   final Function()? onPressed;
   final EdgeInsetsGeometry padding;
   final double borderRadius;
+  final double? width;
 
   const WhatsAppElevatedButton({
     super.key,
@@ -14,6 +15,7 @@ class WhatsAppElevatedButton extends StatelessWidget {
     required this.onPressed,
     this.padding = const EdgeInsets.symmetric(vertical: 12, horizontal: 24),
     this.borderRadius = 5,
+    this.width,
   }) : _disabled = onPressed == null;
 
   @override
@@ -25,15 +27,20 @@ class WhatsAppElevatedButton extends StatelessWidget {
       ),
       child: Material(
         color: Colors.transparent,
+        
         child: InkWell(
+          
           onTap: onPressed,
           borderRadius: BorderRadius.circular(borderRadius),
-          child: DefaultTextStyle(
-            style: TextStyle(
-              fontSize: 14,
-              color: Theme.of(context).canvasColor,
+          child: SizedBox(
+            width: width,
+            child: DefaultTextStyle(
+              style: TextStyle(
+                fontSize: 14,
+                color: Theme.of(context).canvasColor,
+              ),
+              child: Padding(padding: padding, child: child)
             ),
-            child: Padding(padding: padding, child: child)
           ),
         ),
       ),

@@ -107,72 +107,71 @@ class WhatsAppListTile extends StatelessWidget {
                 )
               ),
 
-              SizedBox(
-                child: Column(
+              Column(
+                
+                crossAxisAlignment: CrossAxisAlignment.start,
+                mainAxisAlignment: MainAxisAlignment.center,
+                mainAxisSize: MainAxisSize.min,
+                      
+                children: [
+                      
+                  SizedBox(
+                    width: MediaQuery.of(context).size.width - (3 * _kPadding) - _kLeadingSize,
+                    child: Row(
                   
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  mainAxisSize: MainAxisSize.min,
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      mainAxisSize: MainAxisSize.max,
                         
-                  children: [
-                        
-                    SizedBox(
-                      width: MediaQuery.of(context).size.width - (3 * _kPadding) - _kLeadingSize,
-                      child: Row(
+                      children: [
+                        DefaultTextStyle(
+                          overflow: TextOverflow.ellipsis,
+                          style: Theme.of(context).textTheme.bodyLarge ?? const TextStyle(),
+                          child: title,
+                        ),
+
+                        if(trailingText != null) DefaultTextStyle(
+                          overflow: TextOverflow.clip,
+                          style: Theme.of(context).textTheme.labelMedium ?? const TextStyle(),
+                          child: trailingText!
+                        )
+                      ],
+                    ),
+                  ),
+
+                  SizedBox.fromSize(size: const Size(0, 2),),
+
+                  SizedBox(
+                    width: MediaQuery.of(context).size.width - (3 * _kPadding) - _kLeadingSize,
                     
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        mainAxisSize: MainAxisSize.max,
-                          
-                        children: [
-                          DefaultTextStyle(
-                            overflow: TextOverflow.ellipsis,
-                            style: Theme.of(context).textTheme.bodyLarge ?? const TextStyle(),
-                            child: title,
+                    child: Row(
+    
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      mainAxisSize: MainAxisSize.max,
+      
+                      children: [
+                        if(subtitle != null)
+                          SizedBox(
+                            width: MediaQuery.of(context).size.width - (3 * _kPadding) - _kLeadingSize - 8 - (18 * (trailingIcons?.length ?? 0)),
+                            child: DefaultTextStyle(
+                              overflow: TextOverflow.ellipsis,
+                              style: Theme.of(context).textTheme.bodySmall ?? const TextStyle(),
+                              maxLines: 1,
+                              child: subtitle!
+                            ),
                           ),
 
-                          if(trailingText != null) DefaultTextStyle(
-                            overflow: TextOverflow.clip,
-                            style: Theme.of(context).textTheme.labelMedium ?? const TextStyle(),
-                            child: trailingText!
+                        if(trailingIcons != null) 
+                          Row(
+                            mainAxisSize: MainAxisSize.min,
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+
+                            children: trailingIcons!,
                           )
-                        ],
-                      ),
+                      ],
                     ),
-
-                    SizedBox.fromSize(size: const Size(0, 2),),
-
-                    SizedBox(
-                      width: MediaQuery.of(context).size.width - (3 * _kPadding) - _kLeadingSize,
+                  )
                       
-                      child: Row(
-      
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        mainAxisSize: MainAxisSize.max,
-      
-                        children: [
-                          if(subtitle != null)
-                            SizedBox(
-                              width: MediaQuery.of(context).size.width - (3 * _kPadding) - _kLeadingSize - 8 - (18 * (trailingIcons?.length ?? 0)),
-                              child: DefaultTextStyle(
-                                overflow: TextOverflow.ellipsis,
-                                style: Theme.of(context).textTheme.bodySmall ?? const TextStyle(),
-                                maxLines: 1,
-                                child: subtitle!
-                              ),
-                            ),
-
-                          if(trailingIcons != null) 
-                            Row(
-                              mainAxisSize: MainAxisSize.min,
-                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-
-                              children: trailingIcons!,
-                            )
-                        ],
-                      ),
-                    )
-                        
-                  ],
-                ),
+                ],
               ),
 
               SizedBox(

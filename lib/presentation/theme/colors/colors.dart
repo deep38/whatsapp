@@ -10,6 +10,7 @@ class ThemeColors {
   final Color text = Colors.black;
   // final Color secondaryText = const Color(0xff687983);
   final Color secondaryText = const Color.fromARGB(255, 173, 185, 192);
+  final Color labelText = const Color.fromARGB(255, 173, 185, 192);
 
   final Color tabIndicator = Colors.white;
   final Color tabHighlight = Colors.white;
@@ -30,6 +31,8 @@ class ThemeColors {
   final Color selectedTile = const Color(0xfff7f8fa);
   final Color selectedChat = const Color(0xB300BBFF);
 
+  final Color scrollbarThumb = const Color.fromARGB(255, 173, 185, 192);
+
   final Color blue = const Color(0xff019de2);
   final Color blueDark = const Color(0xff1287b8);
 
@@ -38,6 +41,7 @@ class ThemeColors {
   final Color chatReceivedBubble = Colors.white;
   final Color touchedChatSentBubble = const Color(0xFFD0F0CE);
   final Color touchedChatReceivedBubble = const Color(0xFFF0F0F1);
+  final Color selectedChatBubbleHighlightColor = Colors.teal.withOpacity(0.3);
 
   final Color fail = const Color(0xffeb0a40);
 

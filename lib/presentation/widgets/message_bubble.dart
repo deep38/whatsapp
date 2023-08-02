@@ -1,17 +1,16 @@
 import 'dart:async';
 
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:whatsapp/Authentication/firebase_user_manager.dart';
 import 'package:whatsapp/bloc/chatting/chats_bloc.dart';
 import 'package:whatsapp/bloc/chatting/chats_event.dart';
 import 'package:whatsapp/bloc/chatting/chats_state.dart';
-import 'package:whatsapp/data/helpers/message_helper.dart';
 import 'package:whatsapp/data/models/message.dart';
-import 'package:whatsapp/packages/whatsapp_icons/lib/whatsapp_icons.dart';
+import 'package:whatsapp/presentation/theme/theme.dart';
 import 'package:whatsapp/presentation/widgets/time_stamped_chat_message.dart';
 import 'package:whatsapp/utils/enums.dart';
+import 'package:whatsapp/utils/extensions.dart';
 import 'package:whatsapp/utils/global.dart';
 
 class MessageBubble extends StatefulWidget {
@@ -19,10 +18,13 @@ class MessageBubble extends StatefulWidget {
   final String? roomId;
   final double fontSize;
   final bool isOfPreviousMessageType;
+  final bool onPrviousMessageDay;
   final Color? color;
   final Color? touchedColor;
   final bool? isSent;
   final StreamController<String>? chatIdStreamController;
+  final bool inSelectMode;
+  final void Function(bool selected, Message message)? onSelectToggle;
 
   const MessageBubble({
     super.key,
@@ -33,7 +35,10 @@ class MessageBubble extends StatefulWidget {
     this.isSent,
     this.fontSize = 16,
     this.isOfPreviousMessageType = false,
+    this.onPrviousMessageDay = true,
     this.chatIdStreamController,
+    this.inSelectMode = false,
+    this.onSelectToggle,
   }); //: assert(roomId != null || chatIdStreamController != null);
 
   @override
@@ -41,7 +46,6 @@ class MessageBubble extends StatefulWidget {
 }
 
 class _MessageBubbleState extends State<MessageBubble> {
-
   late Color? _bubbleColor;
   bool _selected = false;
   late bool _isSent;
@@ -78,72 +82,120 @@ class _MessageBubbleState extends State<MessageBubble> {
         (MediaQuery.of(context).size.width * 0.15);
     const horizontalPadding = 16.0;
 
-    if(widget.message.status != MessageStatus.seen && widget.message.senderId != UserManager.uid) {
-      BlocProvider.of<ChattingBloc>(context).add(LocalMessageUpdateEvent(widget.roomId!, widget.message.id, MessageStatus.seen));
+    if (widget.message.status != MessageStatus.seen &&
+        widget.message.senderId != UserManager.uid) {
+      debugPrint(
+          "...........Message sender Id: ${widget.message.senderId}...............");
+      BlocProvider.of<ChattingBloc>(context).add(LocalMessageUpdateEvent(
+          widget.roomId!, widget.message, MessageStatus.seen));
     }
 
     return GestureDetector(
       onTapDown: _onTouched,
       onTapUp: _whenUntouched,
       onTapCancel: _whenUntouched,
-      onLongPress: () => setState(() {
-        _selected = !_selected;
-      }),
-      child: Stack(
-        children: [
-          Container(
-            color: Colors.transparent,
-            alignment: _isSent ? Alignment.centerRight : Alignment.centerLeft,
-            child: Container(
-              constraints: BoxConstraints(
-                maxWidth: maxWidth,
-              ),
-              padding: EdgeInsets.symmetric(
-                vertical: widget.isOfPreviousMessageType ? 2 : 8,
-                horizontal: horizontalPadding,
-              ),
-              child: CustomPaint(
-                painter: MessageBubblePainter(
-                    color: _bubbleColor ?? Theme.of(context).canvasColor,
-                    isSent: _isSent,
-                    isOfPreviousMessageType: widget.isOfPreviousMessageType),
-                child: Padding(
-                  padding: const EdgeInsets.all(8.0),
-                  child: _isSent
-                      ? Stack(
-                          children: [
-                            _buildTimeStampedMessage(context, 18),
-                            BlocBuilder<ChattingBloc, ChattingState>(
-                              buildWhen: (previsous, current) => current is MessageStatusUpdateState && current.messageId == widget.message.id,
-                              builder: (context, state) { 
-                                debugPrint("Message icon updated: $state");
-                                return Positioned(
-                                right: 0,
-                                bottom: 0,
-                                child: state is MessageStatusUpdateState
-                                  ? _buildMessageStatusIcon(state.status)
-                                  : _buildMessageStatusIcon(MessageStatus.sending),
-                              );
-                              }
-                            ),
-                          ],
-                        )
-                      : _buildTimeStampedMessage(context, 0),
-                ),
-              ),
+      onTap: widget.inSelectMode ? _invertSelection : null,
+      onLongPress: _invertSelection,
+      child: widget.onPrviousMessageDay
+          ? _buildBubble(maxWidth, horizontalPadding, context)
+          : Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                _buildDayIndicator(),
+                _buildBubble(maxWidth, horizontalPadding, context),
+              ],
             ),
-          ),
-          if (_selected)
-            const Positioned.fill(
-                child: ColoredBox(
-              color: Color.fromARGB(104, 76, 175, 79),
-            ))
-        ],
-      ),
     );
   }
 
-  TimestampedChatMessage _buildTimeStampedMessage(BuildContext context, double statusIconSize) {
+  Widget _buildDayIndicator() {
+    return Container(
+        color: Colors.transparent,
+        alignment: Alignment.center,
+        child: Container(
+          padding: const EdgeInsets.symmetric(horizontal: 8.0, vertical: 4.0),
+          margin: const EdgeInsets.symmetric(vertical: 6.0),
+          decoration: BoxDecoration(
+            color: Theme.of(context).colorScheme.surface,
+            borderRadius: BorderRadius.circular(8.0),
+          ),
+          child: Text(
+            DateTime.fromMillisecondsSinceEpoch(widget.message.time).describe(),
+            style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                  fontSize: 14,
+                  fontWeight: FontWeight.w600,
+                ),
+          ),
+        ));
+  }
+
+  Widget _buildBubble(
+      double maxWidth, double horizontalPadding, BuildContext context) {
+    return Column(
+      children: [
+        if(!widget.isOfPreviousMessageType)
+        const SizedBox(height: 4,),
+        Stack(
+          children: [
+            Container(
+              color: Colors.transparent,
+              alignment: _isSent ? Alignment.centerRight : Alignment.centerLeft,
+              child: Container(
+                constraints: BoxConstraints(
+                  maxWidth: maxWidth,
+                ),
+                padding: EdgeInsets.symmetric(
+                  vertical: 2,
+                  horizontal: horizontalPadding,
+                ),
+                child: CustomPaint(
+                  painter: MessageBubblePainter(
+                      color: _bubbleColor ?? Theme.of(context).canvasColor,
+                      isSent: _isSent,
+                      isOfPreviousMessageType: widget.isOfPreviousMessageType),
+                  child: Padding(
+                    padding: const EdgeInsets.all(8.0),
+                    child: _isSent
+                        ? Stack(
+                            children: [
+                              _buildTimeStampedMessage(context, 18),
+                              BlocBuilder<ChattingBloc, ChattingState>(
+                                  buildWhen: (previsous, current) =>
+                                      current is MessageStatusUpdateState &&
+                                      current.message.id == widget.message.id,
+                                  builder: (context, state) {
+                                    // debugPrint(".......Message icon updated:  ${(state as MessageStatusUpdateState).message.id}, ${widget.message.id}");
+                                    return Positioned(
+                                      right: 0,
+                                      bottom: 0,
+                                      child: buildMessageStatusIcon(
+                                          widget.message.status),
+                                    );
+                                  }),
+                            ],
+                          )
+                        : _buildTimeStampedMessage(context, 0),
+                  ),
+                ),
+              ),
+            ),
+            if (_selected)
+              Positioned.fill(
+                child: ColoredBox(
+                  color: Theme.of(context)
+                          .extension<WhatsAppThemeComponents>()
+                          ?.selectedChatBubbleHighlightColor ??
+                      Colors.transparent,
+                ),
+              )
+          ],
+        ),
+      ],
+    );
+  }
+
+  TimestampedChatMessage _buildTimeStampedMessage(
+      BuildContext context, double statusIconSize) {
     return TimestampedChatMessage(
       text: widget.message.data,
       sentAt: convertTimeToString(widget.message.time),
@@ -157,169 +209,12 @@ class _MessageBubbleState extends State<MessageBubble> {
     );
   }
 
-  // Widget _customPaint(
-  //     BuildContext context, double maxWidth, double horizontalPadding) {
-  //   const double messageStateIconSize = 18;
-  //   final double infoWidth =
-  //       63 + 6 + (widget.isSent ? messageStateIconSize : 0);
-  //   final availableWidth = maxWidth -
-  //       (2 * (horizontalPadding + 8)) -
-  //       infoWidth -
-  //       6; // 6 is left padding of info
-  //   final textData = _getMessageWidth(context, availableWidth + infoWidth + 6);
-  //   double lastLineWidth = textData['width'];
-  //   double longestLineWidth = textData['longestLineWidth'];
-
-  //   return CustomPaint(
-  //     painter: MessageBubblePainter(
-  //       color: _bubbleColor ?? Colors.white,
-  //       isSent: widget.isSent,
-  //       isOfPreviousMessageType: widget.isOfPreviousMessageType,
-  //     ),
-  //     child: Padding(
-  //       padding: const EdgeInsets.symmetric(vertical: 4, horizontal: 8),
-  //       child: longestLineWidth < availableWidth
-  //           ? _buildRow(context, infoWidth, messageStateIconSize)
-  //           : (lastLineWidth % (availableWidth + infoWidth)) + infoWidth <
-  //                   availableWidth
-  //               ? _buildStack(context, infoWidth, messageStateIconSize)
-  //               : _buildColumn(context, infoWidth, messageStateIconSize),
-  //     ),
-  //   );
-  // }
-
-  // Column _buildColumn(
-  //     BuildContext context, double infoWidth, double messageStateIconSize) {
-  //   return Column(
-  //     mainAxisSize: MainAxisSize.min,
-  //     crossAxisAlignment: CrossAxisAlignment.end,
-  //     children: [
-  //       _buildMessageText(context),
-  //       _buildMessageInfo(context, infoWidth, messageStateIconSize)
-  //     ],
-  //   );
-  // }
-
-  // Stack _buildStack(
-  //     BuildContext context, double infoWidth, double messageStateIconSize) {
-  //   return Stack(
-  //     children: [
-  //       _buildMessageText(context),
-  //       Positioned(
-  //         right: 0,
-  //         bottom: 0,
-  //         child: _buildMessageInfo(context, infoWidth, messageStateIconSize),
-  //       )
-  //     ],
-  //   );
-  // }
-
-  // Row _buildRow(
-  //     BuildContext context, double infoWidth, double messageStateIconSize) {
-  //   return Row(
-  //     mainAxisSize: MainAxisSize.min,
-  //     crossAxisAlignment: CrossAxisAlignment.end,
-  //     children: [
-  //       _buildMessageText(context),
-  //       _buildMessageInfo(context, infoWidth, messageStateIconSize)
-  //     ],
-  //   );
-  // }
-
-  // Container _buildMessageText(BuildContext context) {
-  //   return Container(
-  //     padding: const EdgeInsets.only(bottom: 4),
-  //     constraints: BoxConstraints(
-  //         maxWidth: MediaQuery.of(context).size.width -
-  //             (MediaQuery.of(context).size.width * 0.3)),
-  //     child: Text(
-  //       widget.message.data,
-  //     ),
-  //   );
-  // }
-
-  // Widget _buildMessageInfo(
-  //     BuildContext context, double width, double iconSize) {
-  //   return SizedBox(
-  //     width: width,
-  //     child: Row(
-  //       mainAxisSize: MainAxisSize.min,
-  //       children: [
-  //         Padding(
-  //           padding: const EdgeInsets.only(
-  //             left: 6,
-  //           ),
-  //           child: Text(
-  //             "09:30 pm",
-  //             style: Theme.of(context).textTheme.labelMedium,
-  //           ),
-  //         ),
-  //         if (widget.isSent && widget.message.status != null)
-  //           ValueListenableBuilder(
-  //               valueListenable: _messageChangeNotifier,
-  //               builder: (context, message, child) =>
-  //                   _buildMessageState(message.state!, iconSize))
-  //       ],
-  //     ),
-  //   );
-  // }
-
-  Icon _buildMessageStatusIcon(MessageStatus status) {
-    Color iconColor = Colors.grey.shade500;
-    IconData icon = WhatsAppIcons.clock_rounded;
-    double iconSize = 18;
-
-    (IconData, Color, double) getPropertiesOfIcon(MessageStatus status)  => switch (status) {
-      (MessageStatus.waiting || MessageStatus.sending) 
-        => (WhatsAppIcons.clock_rounded, iconColor, 14),
-      MessageStatus.sent => (WhatsAppIcons.tick, iconColor, 14),
-      MessageStatus.received => (WhatsAppIcons.double_tick, iconColor, iconSize),
-      MessageStatus.seen => (WhatsAppIcons.double_tick, Colors.blue, iconSize),
-      MessageStatus.failed => (WhatsAppIcons.warning_circle_outline, Colors.red, 14),
-      
-    };
-    (icon, iconColor, iconSize) = getPropertiesOfIcon(status);
-
-    return Icon(
-      icon,
-      size: iconSize,
-      color: iconColor,
-    );
+  void _invertSelection() {
+    setState(() {
+      _selected = !_selected;
+    });
+    widget.onSelectToggle?.call(_selected, widget.message);
   }
-
-  
-
-  // Map<String, dynamic> _getMessageWidth(context, maxWidth) {
-  //   TextSpan span = TextSpan(
-  //     text: widget.message.data,
-  //     style: Theme.of(context).textTheme.bodyMedium,
-  //   );
-
-  //   TextPainter textPainter = TextPainter(
-  //     text: span,
-  //     textDirection: TextDirection.ltr,
-  //     textScaleFactor: MediaQuery.of(context).textScaleFactor,
-  //     maxLines: null,
-  //   );
-
-  //   textPainter.layout(maxWidth: maxWidth);
-
-  //   List<LineMetrics> lineMetrics = textPainter.computeLineMetrics();
-  //   // double lastLineWidth = lineMetrics.last.width;
-  //   double longestLineWidth = 0;
-  //   // bool lastLineIsLongest = true;
-  //   for (var lineMetric in lineMetrics) {
-  //     if (lineMetric.width > longestLineWidth) {
-  //       longestLineWidth = lineMetric.width;
-  //     }
-  //   }
-  //   // debugPrint("$message: $lineMetrics");
-  //   return {
-  //     "width": lineMetrics.last.width,
-  //     "longestLineWidth": longestLineWidth
-  //   };
-  // }
-
 }
 
 class MessageBubblePainter extends CustomPainter {

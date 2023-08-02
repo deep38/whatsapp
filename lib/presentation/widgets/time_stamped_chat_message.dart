@@ -236,6 +236,7 @@ class TimestampedChatMessageRenderObject extends RenderBox {
       '`maxWidth` value of $maxWidth.',
     );
 
+    debugPrint("MaxwidtH: $maxWidth");
     // Layout the raw message, which saves expected high-level sizing values
     // to the painter itself.
     _textPainter.layout(maxWidth: maxWidth);
@@ -282,7 +283,7 @@ class TimestampedChatMessageRenderObject extends RenderBox {
       _sentAtFitsOnLastLine = lastLineWithDate < maxWidth;
     } else {
       _sentAtFitsOnLastLine =
-          lastLineWithDate < min(_longestLineWidth, maxWidth);
+          lastLineWithDate < max(_longestLineWidth, maxWidth);
     }
 
     late Size computedSize;
@@ -300,6 +301,14 @@ class TimestampedChatMessageRenderObject extends RenderBox {
       // line.
 
       if (textLines.length == 1) {
+        computedSize = Size(
+          // When there is only 1 line, our width calculations are in a special
+          // case of needing as many pixels as our line plus the date, as opposed
+          // to the full size of the longest line.
+          lastLineWithDate,
+          sizeOfMessage.height,
+        );
+      } if (_longestLineWidth < lastLineWithDate) {
         computedSize = Size(
           // When there is only 1 line, our width calculations are in a special
           // case of needing as many pixels as our line plus the date, as opposed
@@ -330,7 +339,9 @@ class TimestampedChatMessageRenderObject extends RenderBox {
     // This line writes the actual message to the screen. Because we use the
     // same offset we were passed, the text will appear in the upper-left corner
     // of our available space.
+    
     _textPainter.paint(context.canvas, offset);
+
 
     late Offset sentAtOffset;
     if (_sentAtFitsOnLastLine) {

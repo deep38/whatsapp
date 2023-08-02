@@ -7,12 +7,10 @@ import 'package:whatsapp/presentation/widgets/profile_photo_indicator.dart';
 import 'package:whatsapp/presentation/widgets/security_message.dart';
 
 class StatusPage extends StatelessWidget {
-  final Function(Function()?) setOnFabPressed;
-  const StatusPage({super.key, required this.setOnFabPressed});
+  const StatusPage({super.key});
 
   @override
   Widget build(BuildContext context) {
-    setOnFabPressed(null);
     return CustomScrollView(
       slivers: [
         _buildMyStatus(),
@@ -31,8 +29,8 @@ class StatusPage extends StatelessWidget {
           title: Text("My status"),
           subtitle: Text("Tap to add status update"),
           leading: ProfilePhoto(
-            placeholder: AssetImage(AssetImages.default_profile),
-            image: NetworkImage("#"),
+            placeholderPath: AssetImages.default_profile,
+            imageUrl: "#",
             indicator: ProfilePhotoIndicator(
               icon: Icon(
                 WhatsAppIcons.add, 
@@ -50,8 +48,8 @@ class StatusPage extends StatelessWidget {
       itemBuilder: (context, index) {
         return WhatsAppListTile(
           leading: const ProfilePhoto(
-            image: NetworkImage("#"),
-            placeholder: AssetImage(AssetImages.default_profile),
+            imageUrl: "#",
+            placeholderPath: AssetImages.default_profile,
           ), 
           title: Text("Status $index"),
           subtitle: const Text("Today, 01:11 am"),
@@ -66,8 +64,8 @@ class StatusPage extends StatelessWidget {
       itemBuilder: (context, index) {
         return WhatsAppListTile(
           leading: const ProfilePhoto(
-            image: NetworkImage("#"),
-            placeholder: AssetImage(AssetImages.default_profile),
+            imageUrl: "#",
+            placeholderPath: AssetImages.default_profile,
           ), 
           title: Text("Status $index"),
           subtitle: const Text("Today, 01:11 am"),

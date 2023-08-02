@@ -23,12 +23,14 @@ class ChatRepository {
     final messagesSnapshot = (await _chatFirestore
             .doc(chatId)
             .collection('messages')
-            .orderBy('time', descending: true)
             .get())
         .docs;
     if (messagesSnapshot.isNotEmpty) {
-      debugPrint("${messagesSnapshot.first.data()['senderId'] == UserManager.uid}");
+      debugPrint(
+          "ChattingBloc: Started by this user: ${messagesSnapshot.first.data()['senderId'] == UserManager.uid}");
       return messagesSnapshot.first.data()['senderId'] == UserManager.uid;
+    } else {
+      debugPrint("ChattingBloc: Message snapshot is empty");
     }
 
     return false;
@@ -52,12 +54,20 @@ class ChatRepository {
   Future<String> createChatOnFirebase(Chat chat) async {
     return (await _chatFirestore.add({
       'type': chat.type.name,
-      'participants': [UserManager.uid, ...(chat.participants.map((e) => e.id))]
+      'creatorId': UserManager.uid,
+      'participants': [UserManager.uid, ...(chat.participants.map((e) => e.id))],
     }))
         .id;
   }
 
   Future<List<Chat>> getChatsFromLocalDB() async {
+    final allmessages = await _messageTable.getAll();
+    debugPrint(
+        "ChattingBloc: ........Printing all messages from table........");
+    for (Map<String, dynamic> message in allmessages) {
+      debugPrint(
+          "ChattingBloc: ${message['id']}, ${message['data']}, ${message['status']}, ${message['chatId']}.");
+    }
     List<Chat> chatList = [];
     List<Message> messageList;
     List<WhatsAppUser> participants;
@@ -68,6 +78,12 @@ class ChatRepository {
       messageList = (await _messageTable.getAllForChat(chatMap['id']))
           .map((messageMap) => Message.fromMap(messageMap))
           .toList();
+      debugPrint(
+          "ChattingBloc: ........Printing all messages for chat id ${chatMap['id']}........");
+      for (Message message in messageList) {
+        debugPrint(
+            "ChattingBloc: ${message.id}, ${message.data}, ${message.status}}.");
+      }
 
       /// LOAD ALL PARTICIPANTS
       List<String> participantsIdList =
@@ -93,10 +109,11 @@ class ChatRepository {
   Future<Chat> getChatFromFirebase(String id) async {
     final chatMap = (await _chatFirestore.doc(id).get()).data();
 
-    if (chatMap == null) throw Exception("No chat found on firebase with id = $id");
+    if (chatMap == null)
+      throw Exception("No chat found on firebase with id = $id");
 
     Chat chat = Chat.fromFirebaseMap(id, chatMap);
-    
+
     for (final userId in chatMap['participants'] as List<dynamic>) {
       final localUserMap = await _userTable.getById(userId as String);
       if (localUserMap.isNotEmpty) {
@@ -117,9 +134,9 @@ class ChatRepository {
             .get())
         .docs
         .map(
-          (messageSnapshot) => Message.fromMap(
-            messageSnapshot.data(),
+          (messageSnapshot) => Message.fromFirebaseMap(
             messageSnapshot.id,
+            messageSnapshot.data(),
           ),
         )
         .toList();
@@ -129,13 +146,16 @@ class ChatRepository {
 
   Future<void> addMessageInLocalDB(String chatId, Message message) async {
     await _messageTable.insert(message.toTableRow(chatId));
+    debugPrint(
+        "Chat: Message inserted in message table ${message.data} $chatId: ${await _messageTable.getAll()}");
   }
 
   Future<String> sendMessageToFirebase(String chatId, Message message) async {
     return (await _chatFirestore
-        .doc(chatId)
-        .collection('messages')
-        .add(message.toMapWithoutId())).id;
+            .doc(chatId)
+            .collection('messages')
+            .add(message.toFirebaseMap()))
+        .id;
   }
 
   Future<void> updateChatId(String oldId, String newId) async {
@@ -147,25 +167,37 @@ class ChatRepository {
   Future<void> updateMessageId(String oldId, String newId) async {
     await _messageTable.updateId(oldId, newId);
   }
+
   Future<void> removeFieldsFromFirebaseChat(String chatId) async {
     await _chatFirestore.doc(chatId).set({});
   }
 
-
-  Future<void> updateMessageStatus(String chatId, String messageId, MessageStatus status) async {
+  Future<void> updateMessageStatus(
+      String chatId, String messageId, MessageStatus status) async {
     await updateMessageStatusInLocalDB(chatId, messageId, status);
     await updateMessageStatusOnFirebase(chatId, messageId, status);
     // await _messageTable.updateStatus(chatId, messageId, status.name);
     // await _chatFirestore.doc(chatId).collection('messages').doc(messageId).set({'status': status.name}, SetOptions(merge: true));
   }
 
-  Future<void> updateMessageStatusOnFirebase(String chatId, String messageId, MessageStatus status) async {
-    await _chatFirestore.doc(chatId).collection('messages').doc(messageId).set({'status': status.name}, SetOptions(merge: true));
+  Future<void> updateMessageStatusOnFirebase(
+      String chatId, String messageId, MessageStatus status) async {
+    await _chatFirestore
+        .doc(chatId)
+        .collection('messages')
+        .doc(messageId)
+        .set({'status': status.name}, SetOptions(merge: true));
   }
 
-  Future<void> updateMessageStatusInLocalDB(String chatId, String messageId, MessageStatus status) async {
+  Future<void> updateMessageStatusInLocalDB(
+      String chatId, String messageId, MessageStatus status) async {
     await _messageTable.updateStatus(chatId, messageId, status.name);
   }
+
+  Future<void> updateMessageIdAndStatus(
+      String oldId, String newId, MessageStatus status) async {
+        _messageTable.updateIdAndStatus(oldId, newId, status.name);
+      }
 
   Future<void> clearData() async {
     _chatTable.deleteAll();

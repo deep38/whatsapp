@@ -79,7 +79,7 @@ class TableHelper {
   Future<void> deleteChat(String chatId) async {
     await _chatTable.delete(chatId);
     await _chatUsersTable.deleteChat(chatId);
-    await _messageTable.deleteMessages(chatId);
+    await _messageTable.deleteMessagesWithChatId(chatId);
     await _waitingMessageTable.deleteMessages(chatId);
   }
   Future<int> insertChat(Map<String, dynamic> chat) async {

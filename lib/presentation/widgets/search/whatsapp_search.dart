@@ -1,7 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:whatsapp/presentation/widgets/search/search_option_chips.dart';
+import 'package:whatsapp/utils/enums.dart';
 
 class WhatsAppSearch extends StatefulWidget {
   final double? height;
+  final bool showOptionChips;
   final Widget? leading;
   final Widget? trailing;
   final Function() onClose;
@@ -10,6 +13,7 @@ class WhatsAppSearch extends StatefulWidget {
   const WhatsAppSearch({
     super.key,
     this.height,
+    this.showOptionChips = false,
     required this.visibilityNorifier,
     required this.onClose,
     this.leading,
@@ -44,24 +48,22 @@ class _WhatsAppSearchState extends State<WhatsAppSearch> {
   @override
   Widget build(BuildContext context) {
     return Material(
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          Container(
-            width:  MediaQuery.of(context).size.width,
-            height: widget.height,
-            decoration: BoxDecoration(
-              color: Theme.of(context).dialogTheme.backgroundColor,
-              boxShadow: [
-                BoxShadow(
-                  offset: const Offset(0, 1),
-                  blurRadius: 1,
-                  color: Theme.of(context).shadowColor
-                )
-              ]
-            ),
-            child: Row(
+      child: Container(
+        width:  MediaQuery.of(context).size.width,
+        height: widget.height,
+        decoration: BoxDecoration(
+          color: Theme.of(context).dialogTheme.backgroundColor,
+          boxShadow: [
+            BoxShadow(
+              offset: const Offset(0, 1),
+              blurRadius: 1,
+              color: Theme.of(context).shadowColor
+            )
+          ]
+        ),
+        child: Column(
+          children: [
+            Row(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 IconButton(
@@ -97,9 +99,12 @@ class _WhatsAppSearchState extends State<WhatsAppSearch> {
                   ),
                 ),
               ],
-            )
-          ),
-        ],
+            ),
+            
+            if(widget.showOptionChips) 
+              const SearchOptionChips(optionList: SearchOptionChip.values),
+          ],
+        )
       ),
     );
   }

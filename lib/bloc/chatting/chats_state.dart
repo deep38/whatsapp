@@ -52,21 +52,21 @@ class NewChatState extends ChattingState {
 }
 
 class NewMessageState extends ChattingState {
-  final String chatId;
+  final Chat chat;
   final Message message;
 
-  NewMessageState(this.chatId, this.message);
+  NewMessageState(this.chat, this.message);
 
   @override
-  List<Object?> get props => [chatId, message];
+  List<Object?> get props => [chat, message];
 }
 
 class MessageStatusUpdateState extends ChattingState {
-  final String messageId;
+  final Message message;
   final MessageStatus status;
 
-  MessageStatusUpdateState(this.messageId, this.status);
+  MessageStatusUpdateState(this.message, this.status);
 
   @override
-  List<Object?> get props => [messageId, status];
+  List<Object?> get props => [message, status];
 }

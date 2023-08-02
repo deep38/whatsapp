@@ -1,3 +1,4 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
@@ -22,6 +23,9 @@ void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   db = await DatabaseHelper().init();
   await Firebase.initializeApp();
+  FirebaseFirestore.instance.settings = const Settings(
+  persistenceEnabled: false,
+);
   runApp(const MyApp());
 }
 
@@ -57,11 +61,7 @@ class MyAppState extends State<MyApp> {
 
   @override
   Widget build(BuildContext context) {
-
-    SystemChrome.setSystemUIOverlayStyle(
-      systemUiOverlayStyle(_themeMode)
-    );
-
+    
     return MultiProvider(
       providers: [
         ChangeNotifierProvider(create: (context) => SelectCountProvider()),
@@ -73,7 +73,7 @@ class MyAppState extends State<MyApp> {
 
         routes: {
           
-          Routes.settings:(context) => const SettingsScreen(),
+          Routes.settings:(context) => SettingsScreen(),
 
         },
       ),

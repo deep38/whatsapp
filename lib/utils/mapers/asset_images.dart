@@ -5,3 +5,8 @@ class AssetImages {
   static const String intro = "$_imageFolder/intro.png";
   static const String add_a_photo = "$_imageFolder/add_a_photo.png";
 }
+
+class AssetSvgs {
+  static const String _svgFolder = "assets/svgs";
+  static const String start_community = "$_svgFolder/start_community.svg";
+}

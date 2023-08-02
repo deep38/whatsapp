@@ -6,9 +6,11 @@ import 'package:flutter_image_compress/flutter_image_compress.dart';
 import 'package:image_cropper/image_cropper.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:whatsapp/Authentication/firebase_user_manager.dart';
+import 'package:whatsapp/data/helpers/image_picker_helper.dart';
 import 'package:whatsapp/packages/whatsapp_icons/lib/whatsapp_icons.dart';
 import 'package:whatsapp/presentation/pages/home/home.dart';
 import 'package:whatsapp/presentation/widgets/login_scaffold.dart';
+import 'package:whatsapp/presentation/widgets/name_text_field.dart';
 import 'package:whatsapp/presentation/widgets/processing_dialog.dart';
 import 'package:whatsapp/presentation/widgets/whatsapp_elevated_button.dart';
 import 'package:whatsapp/utils/global.dart';
@@ -26,7 +28,7 @@ class _AddProfileInfoPageState extends State<AddProfileInfoPage> {
 
   final TextEditingController _nameFieldController = TextEditingController();
 
-  final ValueNotifier<int> _nameLengthChangeNotifier = ValueNotifier(0);
+  final ValueNotifier<bool> _nameValidationChangeNotifier = ValueNotifier(false);
   final ValueNotifier<Uint8List?> _imageFileChangeNotifier =
       ValueNotifier(null);
 
@@ -35,7 +37,7 @@ class _AddProfileInfoPageState extends State<AddProfileInfoPage> {
   @override
   void dispose() {
     _nameFieldController.dispose();
-    _nameLengthChangeNotifier.dispose();
+    _nameValidationChangeNotifier.dispose();
     super.dispose();
   }
 
@@ -65,54 +67,19 @@ class _AddProfileInfoPageState extends State<AddProfileInfoPage> {
             const SizedBox(
               height: 14,
             ),
-            Row(
-              children: [
-                Expanded(
-                  child: TextFormField(
-                    controller: _nameFieldController,
-                    validator: _nameValidator,
-                    // autovalidateMode: AutovalidateMode.onUserInteraction,
-                    onChanged: (value) =>
-                        _nameLengthChangeNotifier.value = value.length,
-                    textCapitalization: TextCapitalization.words,
-                    maxLength: 25,
-                    decoration: InputDecoration(
-                        counter: ValueListenableBuilder(
-                          valueListenable: _nameLengthChangeNotifier,
-                          builder: (context, value, child) {
-                            return Transform.translate(
-                              child: Text(
-                                "${25 - value}",
-                                style: Theme.of(context).textTheme.bodySmall,
-                              ),
-                              offset: const Offset(0, -30),
-                            );
-                          },
-                        ),
-                        errorStyle: Theme.of(context)
-                            .textTheme
-                            .bodySmall
-                            ?.copyWith(color: Colors.red),
-                        focusedErrorBorder: const UnderlineInputBorder(
-                          borderSide: BorderSide(color: Colors.red, width: 2),
-                        ),
-                        errorBorder: const UnderlineInputBorder(
-                          borderSide: BorderSide(color: Colors.red, width: 1),
-                        )),
-                  ),
-                ),
-                IconButton(
-                    onPressed: () {}, icon: const Icon(WhatsAppIcons.emoji))
-              ],
-            )
+            WhatsAppTextField(
+              controller: _nameFieldController,
+              onValidationChange: (isValid) => _nameValidationChangeNotifier.value = isValid,
+            ),
           ],
         ),
         bottom: ValueListenableBuilder(
-          valueListenable: _nameLengthChangeNotifier,
+          valueListenable: _nameValidationChangeNotifier,
           builder: (context, value, child) {
             return WhatsAppElevatedButton(
               borderRadius: 50,
-              onPressed: value > 0 ? () => _onNext(context) : null,
+              // width: 150,
+              onPressed: value ? () => _onNext(context) : null,
               child: const Text("Next"),
             );
           },
@@ -129,34 +96,19 @@ class _AddProfileInfoPageState extends State<AddProfileInfoPage> {
     }
   }
 
-  Future<void> _selectImageFromGallery() async {
-    final pickedImage =
-        await ImagePicker().pickImage(source: ImageSource.gallery);
-
-    if (pickedImage != null) {
-      _cropAndCompressImage(File(pickedImage.path));
-    } else {
-      showSnackBar(context, "No image selected");
+  void _selectImageFromGallery() {
+    ImagePickerHelper.selectImageFromGallery(context)
+    .then((value) {
+      if(value != null) {
+        _imageFileChangeNotifier.value = value;
+      }
+    })
+    .catchError((err) {
+      showSnackBar(context, err);
     }
+    );
   }
-
-  Future<void> _cropAndCompressImage(File image) async {
-    _imageFileChangeNotifier.value = await (await ImageCropper().cropImage(
-      sourcePath: image.path,
-      aspectRatio: const CropAspectRatio(ratioX: 1, ratioY: 1),
-      compressQuality: 80,
-      uiSettings: [
-        AndroidUiSettings(
-          toolbarTitle: 'Crop Image',
-          toolbarColor: Theme.of(context).colorScheme.surface,
-          toolbarWidgetColor: Theme.of(context).colorScheme.onSurface,
-          initAspectRatio: CropAspectRatioPreset.square,
-          lockAspectRatio: true,
-        ),
-      ]
-    ))?.readAsBytes();
-  }
-
+  
   void _onNext(BuildContext context) {
     // if(_formKey.currentState?.validate() ?? false) {
     showDialog(

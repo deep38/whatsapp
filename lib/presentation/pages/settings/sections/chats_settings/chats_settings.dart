@@ -28,7 +28,7 @@ class ChatsSettings extends StatelessWidget {
                 size: 26,
               ),
               title: const Text("Theme"),
-              subtitle: Text(themeMode.name),
+              subtitle: Text(themeMode.name, style: Theme.of(context).textTheme.bodySmall,),
               onTap: () => _showChangeThemeDialog(context),
             ),
           ],

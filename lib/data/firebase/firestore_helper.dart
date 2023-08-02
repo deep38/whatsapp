@@ -94,7 +94,6 @@ class FirestoreHelper {
         .collection('chats')
         .doc(roomId)
         .collection('messages')
-        .where('status', isEqualTo: MessageStatus.sent.name)
         .orderBy('time')
         .snapshots();
   }
@@ -104,12 +103,11 @@ class FirestoreHelper {
         .collection('chats')
         .doc(roomId)
         .collection('messages')
-        .where('status', isEqualTo: MessageStatus.sent.name)
         .orderBy('time')
         .get();
 
     return snapshot.docs
-        .map((doc) => Message.fromMap(doc.data(), doc.id))
+        .map((doc) => Message.fromFirebaseMap( doc.id, doc.data(),))
         .toList();
   }
 

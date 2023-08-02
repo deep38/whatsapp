@@ -7,18 +7,18 @@ import 'package:whatsapp/utils/enums.dart';
 
 class WhatsAppUser {
   final String id;
-  final String phoneNo;
-  final String? name;
-  final String? profileUrl;
-  final String about;
-  final int? lastSeen;
-  final UserStatus? status;
+  String phoneNo;
+  String? name;
+  String? photoUrl;
+  String about;
+  int? lastSeen;
+  UserStatus? status;
 
   WhatsAppUser({
     required this.id,
     required this.phoneNo,
     required this.name,
-    required this.profileUrl,
+    required this.photoUrl,
     required this.about,
     required this.lastSeen,
     required this.status,
@@ -28,7 +28,7 @@ class WhatsAppUser {
     String? id,
     String? phoneNo,
     String? name,
-    String? profileUrl,
+    String? photoUrl,
     String? about,
     int? lastSeen,
     UserStatus? status,
@@ -37,7 +37,7 @@ class WhatsAppUser {
       id: id ?? this.id,
       phoneNo: phoneNo ?? this.phoneNo,
       name: name ?? this.name,
-      profileUrl: profileUrl ?? this.profileUrl,
+      photoUrl: photoUrl ?? this.photoUrl,
       about: about ?? this.about,
       lastSeen: lastSeen ?? this.lastSeen,
       status: status ?? this.status,
@@ -49,7 +49,7 @@ class WhatsAppUser {
       'id': id,
       'phoneNo': phoneNo,
       'name': name,
-      'profileUrl': profileUrl,
+      'photoUrl': photoUrl,
       'about' : about,
       'lastSeen' : lastSeen,
       'status' : status?.name,
@@ -61,7 +61,7 @@ class WhatsAppUser {
       UserTable.id: id,
       UserTable.phone: phoneNo,
       UserTable.name: name,
-      UserTable.profileUrl: profileUrl,
+      UserTable.photoUrl: photoUrl,
       UserTable.about: about,
     };
   }
@@ -71,7 +71,7 @@ class WhatsAppUser {
       id: map['id'] as String,
       phoneNo: map['phoneNo'] as String,
       name: map['name'] as String,
-      profileUrl: map['profileUrl'] as String?,
+      photoUrl: map['photoUrl'] as String?,
       about: map['about'] as String,
       lastSeen: map['lastSeen'] as int?,
       status: map['status'] != null ? UserStatus.values.firstWhere((s) => s == map['status']) : null,
@@ -83,7 +83,7 @@ class WhatsAppUser {
       id: map[UserTable.id] as String,
       phoneNo: map[UserTable.phone] as String,
       name: map[UserTable.name] as String,
-      profileUrl: map[UserTable.profileUrl] as String?,
+      photoUrl: map[UserTable.photoUrl] as String?,
       about: map[UserTable.about] as String,
       lastSeen: null,
       status: null,
@@ -94,11 +94,11 @@ class WhatsAppUser {
 
   factory WhatsAppUser.fromJson(String source) => WhatsAppUser.fromMap(json.decode(source) as Map<String, dynamic>);
 
-  factory WhatsAppUser.fromFiebaseUser(User user) => WhatsAppUser(id: user.uid, phoneNo: user.phoneNumber!, name: user.displayName, profileUrl: user.photoURL, about: "Hey there! I am using WhatsApp.", lastSeen: null, status: null);
+  factory WhatsAppUser.fromFiebaseUser(User user) => WhatsAppUser(id: user.uid, phoneNo: user.phoneNumber!, name: user.displayName, photoUrl: user.photoURL, about: "Hey there! I am using WhatsApp.", lastSeen: null, status: null);
 
   @override
   String toString() {
-    return 'WhatsAppUser(id: $id, phoneNo: $phoneNo, name: $name, profileUrl: $profileUrl)';
+    return 'WhatsAppUser(id: $id, phoneNo: $phoneNo, name: $name, photoUrl: $photoUrl)';
   }
 
   @override
@@ -110,7 +110,7 @@ class WhatsAppUser {
       other.id == id &&
       other.phoneNo == phoneNo &&
       other.name == name &&
-      other.profileUrl == profileUrl;
+      other.photoUrl == photoUrl;
   }
 
   @override
@@ -118,6 +118,6 @@ class WhatsAppUser {
     return id.hashCode ^
       phoneNo.hashCode ^
       name.hashCode ^
-      profileUrl.hashCode;
+      photoUrl.hashCode;
   }
 }

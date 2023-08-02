@@ -22,6 +22,7 @@ class DeviceContactsPage extends StatefulWidget {
 class _DeviceContactsPageState extends State<DeviceContactsPage> {
   @override
   Widget build(BuildContext context) {
+    // BlocProvider.of<ChattingBloc>(context);
     return SafeArea(
       child: Scaffold(
         appBar: AppBar(title: const Text("Select contacts")),
@@ -58,11 +59,12 @@ class _DeviceContactsPageState extends State<DeviceContactsPage> {
                 BlocBuilder<ContactsBloc, ContactsState>(
                   builder: (context, state) {
                     if (state is ContactsLoadingState) {
-                      return _buildLoadingContacts();
+                      return _buildLoadingTiles(5);
                     }
 
                     if (state is ContactsLoadedState) {
-                      return _buildInviteContacts(state.otherContacts);
+                      return _buildLoadingTiles(5);
+                      // return _buildInviteContacts(state.otherContacts);
                     }
 
                     if (state is ContactsErrorState) {
@@ -181,8 +183,8 @@ class _DeviceContactsPageState extends State<DeviceContactsPage> {
               onTap: () => _openCoversation(users[index]),
               leading: ProfilePhoto(
                 size: 40,
-                placeholder: const AssetImage(AssetImages.default_profile),
-                image: NetworkImage(users[index].profileUrl ?? "#"),
+                placeholderPath: AssetImages.default_profile,
+                imageUrl: users[index].photoUrl ?? "#",
                 //imageErrorBuilder: (context, error, stackTrace) => Image.asset(AssetImages.default_profile),
               ),
               title: Text(users[index].name ?? users[index].phoneNo),
@@ -191,21 +193,50 @@ class _DeviceContactsPageState extends State<DeviceContactsPage> {
         : _buildEmptyMessagge("No contacts.");
   }
 
+  Widget _buildLoadingTiles(int count) {
+    double offset = 30;
+    return SliverList.builder(
+      itemCount: count,
+      itemBuilder: (context, index) => ListTile(
+        leading: CircleAvatar(
+          backgroundColor: Theme.of(context).colorScheme.surface,
+        ),
+        title: ShaderMask(
+          blendMode: BlendMode.srcATop,
+          
+          shaderCallback: (bounds) {
+            return LinearGradient(colors: [
+            Theme.of(context).colorScheme.surface,
+            Colors.grey[300] ?? Colors.grey,
+                        Theme.of(context).colorScheme.surface,
+
+          ]).createShader(Rect.fromLTWH(bounds.top+offset, bounds.left+offset, bounds.width / 3, bounds.height));
+          },
+          child: Container(
+            height: 16,
+            width: 30,
+            decoration: BoxDecoration(
+              // shape: BoxShape.circle,
+              color: Theme.of(context).colorScheme.surface,
+              borderRadius: BorderRadius.circular(8.0)
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+
   void _openCoversation(WhatsAppUser user) async {
     Navigator.pop<bool>(
         context,
-        await Navigator.push<bool>(
+        await navigateTo<bool>(
           context,
-          CupertinoPageRoute(
-            builder: (newContext) {
-              return BlocProvider.value(
+          BlocProvider.value(
                 value: BlocProvider.of<ChattingBloc>(context),
                 child: ChattingPage(
                   user: user,
                 ),
-              );
-            },
-          ),
+              ),
         ));
   }
 }

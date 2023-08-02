@@ -16,7 +16,7 @@ class SecurityMessage extends StatelessWidget {
       width: MediaQuery.of(context).size.width,
       height: 130,
       padding: const EdgeInsets.only(top: 16),
-
+      alignment: Alignment.topCenter,
       decoration: BoxDecoration(
         color: Theme.of(context).listTileTheme.tileColor,
         border: const Border(
@@ -27,10 +27,11 @@ class SecurityMessage extends StatelessWidget {
         )
       ),
       child: Row(
-        crossAxisAlignment: CrossAxisAlignment.start,
+        crossAxisAlignment: CrossAxisAlignment.center,
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
           const Icon(WhatsAppIcons.lock_fill, size: 12,),
+          const SizedBox(width: 4,),
           Text(
             "Your $securityFieldName are ",
             style: Theme.of(context).textTheme.labelSmall,

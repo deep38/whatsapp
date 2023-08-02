@@ -32,7 +32,7 @@ class ChatList extends StatefulWidget {
   final Function(Function(Chat))? setAddChatCallback;
   final SelectCountProvider selectCountProvider;
   final ValueNotifier<bool> selectModeNotifier;
-  final Function(Function()) setOnFabPressed;
+  final ValueNotifier<int> unreadChatsCountNotifier;
 
   const ChatList({
     super.key,
@@ -40,7 +40,7 @@ class ChatList extends StatefulWidget {
     required this.toggleSelectMode,
     required this.selectCountProvider,
     required this.selectModeNotifier,
-    required this.setOnFabPressed,
+    required this.unreadChatsCountNotifier,
     this.setAddChatCallback,
   });
 
@@ -48,19 +48,31 @@ class ChatList extends StatefulWidget {
   State<ChatList> createState() => ChatListState();
 }
 
-class ChatListState extends State<ChatList> {
+class ChatListState extends State<ChatList> with AutomaticKeepAliveClientMixin {
   final GlobalKey<SliverAnimatedListState> _chatListKey = GlobalKey();
   late BuildContext blocContext;
 
+  late ChattingBloc _chattingBloc;
+
   int _pinnedMessages = 0;
   int i = 1;
+
+  @override
+  bool get wantKeepAlive => true;
 
   @override
   void initState() {
     super.initState();
 
     // widget.setAddChatCallback?.call(_addChat);
-    widget.setOnFabPressed(_openDeviceContacts);
+    // widget.setOnFabPressed(_openDeviceContacts);
+  }
+
+  @override
+  void dispose() {
+    debugPrint("PageDisposed");
+    _chattingBloc.dispose();
+    super.dispose();
   }
 
   void _openDeviceContacts() async {
@@ -68,13 +80,13 @@ class ChatListState extends State<ChatList> {
       context,
       CupertinoPageRoute(
         builder: (context) => BlocProvider.value(
-          value: BlocProvider.of<ChattingBloc>(blocContext),
+          value: _chattingBloc,
           child: const DeviceContactsPage(),
         ),
       ),
     );
 
-    if(newChatCreated != null && newChatCreated) {
+    if (newChatCreated != null && newChatCreated) {
       // debugPrint("New chat created");
       // if(_chatListKey.currentState != null) {
       //   _chatListKey.currentState?.insertItem(0);
@@ -83,7 +95,7 @@ class ChatListState extends State<ChatList> {
       // } else {
       //   debugPrint("state not found seted.");
       //   setState(() {
-          
+
       //   });
       // }
     }
@@ -91,6 +103,8 @@ class ChatListState extends State<ChatList> {
 
   @override
   Widget build(BuildContext context) {
+    super.build(context);
+
     return CustomScrollView(
       slivers: [
         RepositoryProvider(
@@ -104,7 +118,8 @@ class ChatListState extends State<ChatList> {
                 listenWhen: (previous, current) => current is NewChatState,
                 listener: (context, state) {
                   if (state is NewChatState) {
-                    if(_chatListKey.currentState == null) {
+                    // widget.unreadChatsCountNotifier.value++;
+                    if (_chatListKey.currentState == null) {
                       setState(() {});
                     } else {
                       _rearangeChats(0, state.currentIndex);
@@ -113,8 +128,9 @@ class ChatListState extends State<ChatList> {
                 },
                 builder: (context, state) {
                   // debugPrint("Load state : ${BlocProvider.of<ChattingBloc>(context)}");
+                  _chattingBloc = BlocProvider.of<ChattingBloc>(context);
                   blocContext = context;
-                  widget.setOnFabPressed(_openDeviceContacts);
+                  // widget.setOnFabPressed(_openDeviceContacts);
                   if (state is ChatsLoadedState) {
                     List<Chat> chats = state.chatList;
                     debugPrint("$chats");
@@ -122,41 +138,31 @@ class ChatListState extends State<ChatList> {
                         ? SliverAnimatedList(
                             key: _chatListKey,
                             initialItemCount: chats.length,
-                            itemBuilder: (context, index, animation) {
+                            itemBuilder: (newContext, index, animation) {
                               debugPrint("${chats[index]}");
-                            final user = chats[index].participants.firstWhere((e) => e.id != UserManager.uid);
-                              return  AnimatedBuilder(
-                              animation: animation,
-                              builder: (context, child) => SizeTransition(
-                                sizeFactor: animation,
-                                axis: Axis.vertical,
-                                child: Opacity(
-                                  opacity: animation.value,
-                                  child: WhatsAppListTile(
-                                    onTap: () => navigateTo(
-                                      context,
-                                      BlocProvider.value(
-                                        value: BlocProvider.of<ChattingBloc>(
-                                            context),
-                                        child: ChattingPage(
-                                          chat: chats[index],
-                                          user: user,
-                                        ),
-                                      ),
+                              final user = chats[index]
+                                  .participants
+                                  .firstWhere((e) => e.id != UserManager.uid);
+                              return AnimatedBuilder(
+                                animation: animation,
+                                builder: (animContext, child) => SizeTransition(
+                                  sizeFactor: animation,
+                                  axis: Axis.vertical,
+                                  child: Opacity(
+                                    opacity: animation.value,
+                                    child: ChatListTile(
+                                      user: user,
+                                      chat: chats[index],
+                                      onSelectToggle: (_, __) {},
+                                      selectModeNotifier:
+                                          widget.selectModeNotifier,
+                                      unreadChatsCountNotifier:
+                                          widget.unreadChatsCountNotifier,
                                     ),
-                                    leading: CircleAvatar(
-                                      backgroundColor: Colors.blueGrey,
-                                      foregroundImage: _getProfielPhoto(user.profileUrl),
-                                    ),
-                                    title: Text(
-                                            user.name
-                                            ?? user.phoneNo),
                                   ),
                                 ),
-                              ),
-                            );
-                            }
-                          )
+                              );
+                            })
                         : _buildEmptyChat();
                   } else if (state is ChatsLoadFailedState) {
                     return _buildChatLoadingError(state.error);
@@ -165,19 +171,34 @@ class ChatListState extends State<ChatList> {
                   }
                 }),
           ),
-        )
+        ),
+        SliverToBoxAdapter(
+          child: SizedBox(
+            height: 50,
+            child: Center(
+              child: Text(
+                "Tap and hold on a chat for more options",
+                style: Theme.of(context)
+                    .textTheme
+                    .labelMedium
+                    ?.copyWith(fontWeight: FontWeight.w900),
+              ),
+            ),
+          ),
+        ),
+        const SliverToBoxAdapter(
+            child: SecurityMessage(securityFieldName: "personal messages"))
       ],
     );
   }
 
   ImageProvider _getProfielPhoto(String? url) {
-    if(url != null) {
+    if (url != null) {
       return NetworkImage(url);
     } else {
       return const AssetImage(AssetImages.default_profile);
     }
   }
-
 
   SliverFillRemaining _buildEmptyChat() {
     return const SliverFillRemaining(
@@ -293,9 +314,18 @@ class ChatListState extends State<ChatList> {
   //   }
   // }
 
-  String generateRandomString(int length) {
-    final random = Random();
-    final charCodes = List.generate(length, (_) => random.nextInt(26) + 97);
-    return String.fromCharCodes(charCodes);
+  void gotoDeviceContacts() {
+    navigateTo(context, BlocProvider.value(
+        value: BlocProvider.of<ChattingBloc>(blocContext),
+        child: const DeviceContactsPage(),
+      ));
+    // Navigator.push(
+    //   context,
+    //   CupertinoPageRoute(builder: (context) => BlocProvider.value(
+    //     value: BlocProvider.of<ChattingBloc>(blocContext),
+    //     child: const DeviceContactsPage(),
+    //   ),)
+      
+    // );
   }
 }

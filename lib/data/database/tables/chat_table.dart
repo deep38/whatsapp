@@ -1,3 +1,4 @@
+import 'package:flutter/material.dart';
 import 'package:sqflite/sqflite.dart';
 import 'package:whatsapp/data/database/database_data_types.dart';
 import 'package:whatsapp/data/database/query.dart';
@@ -31,7 +32,9 @@ class ChatTable {
   }
 
   Future<List<Map<String, dynamic>>> getAll() async {
-    return await db.query(_table);
+    final result = await db.query(_table);
+    debugPrint("All Chats: $result");
+    return result;
   }
 
   Future<int> getUnsentCount() async {

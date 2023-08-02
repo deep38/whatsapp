@@ -45,6 +45,9 @@ class DarkThemeColors extends ThemeColors {
   Color get text => Colors.white;
 
   @override
+  Color get labelText => Colors.white;
+
+  @override
   Color get dialogBackground => surface;
 
   @override
@@ -65,4 +68,5 @@ class DarkThemeColors extends ThemeColors {
 
   @override
   Color get touchedChatReceivedBubble => const Color(0xFF050608);
+
 }

@@ -1,3 +1,4 @@
+import 'package:flutter/material.dart';
 import 'package:whatsapp/data/database/database_data_types.dart';
 import 'package:whatsapp/data/database/query.dart';
 import 'package:whatsapp/utils/enums.dart';
@@ -45,6 +46,7 @@ class MessageTable {
   }
 
   Future<List<Map<String,dynamic>>> getAllForChat(String chatId) async {
+    debugPrint("Chats: All messages: ${await getAll()}");
     return await db.query(
       _table,
       where: "${MessageTable.chatId} = ?",
@@ -58,6 +60,7 @@ class MessageTable {
   }
 
   Future<int> updateStatus(String chatId, String messageId, String status) async {
+    debugPrint("MessageTable: Trying to update $messageId from table ");
     return await db.update(
       _table,
       {
@@ -83,7 +86,19 @@ class MessageTable {
     return db.update(
       _table,
       {
-        MessageTable.chatId: newId
+        MessageTable.id: newId
+      },
+      where: "${MessageTable.id} = ?",
+      whereArgs: [oldId]
+    );
+  }
+
+  Future<int> updateIdAndStatus(String oldId, String newId, String status) async {
+    return db.update(
+      _table,
+      {
+        MessageTable.id: newId,
+        MessageTable.status: status,
       },
       where: "${MessageTable.id} = ?",
       whereArgs: [oldId]
@@ -101,13 +116,21 @@ class MessageTable {
     );
   }
 
-  Future<int> deleteMessages(String chatId) async {
+  Future<int> deleteMessagesWithChatId(String chatId) async {
     return db.delete(
       _table,
       where: "${MessageTable.chatId} = ?",
       whereArgs: [chatId]
     );
   }
+
+  Future<int> deleteMessages(List<String> messages) async {
+    return await db.delete(
+      _table,
+      where: "${MessageTable.id} IN (${messages.join(',')})",
+    );
+  }
+
 
   Future<int> deleteAll() async {
     return await db.delete(

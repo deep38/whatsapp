@@ -93,6 +93,7 @@ class _EnterPhoneNumberPageState extends State<EnterPhoneNumberPage> {
         bottom: ValueListenableBuilder(
           valueListenable: _validPhoneNumberNotifier,
           builder: (context, isValid, child) => WhatsAppElevatedButton(
+            width: 90,
             onPressed: isValid ? _connectAndVerify : null,
             child: const Text("NEXT"),
           ),

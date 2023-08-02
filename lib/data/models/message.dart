@@ -1,6 +1,7 @@
 // ignore_for_file: public_member_api_docs, sort_constructors_first
 import 'dart:convert';
 
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:whatsapp/data/database/tables/message_table.dart';
 
 import '../../../utils/enums.dart';
@@ -57,21 +58,31 @@ class Message {
     };
   }
 
-  Map<String, dynamic> toMapWithoutId() {
+  Map<String, dynamic> toFirebaseMap() {
     return <String, dynamic>{
       'data': data,
       'senderId': senderId,
-      'time': time,
+      'time': FieldValue.serverTimestamp(),
       'status': status.name,
     };
   }
 
-  factory Message.fromMap(Map<String, dynamic> map, [String? id]) {
+  factory Message.fromMap(Map<String, dynamic> map) {
     return Message(
-      id: id ?? map['id'] as String,
+      id: map['id'] as String,
       data: map['data'] as String,
       senderId: map['senderId'] as String,
       time: map['time'] as int,
+      status: MessageStatus.values.firstWhere((element) => element.name == map['status'])
+    );
+  }
+
+  factory Message.fromFirebaseMap(String id, Map<String, dynamic> map) {
+    return Message(
+      id: id,
+      data: map['data'] as String,
+      senderId: map['senderId'] as String,
+      time: (map['time'] as Timestamp).toDate().millisecondsSinceEpoch,
       status: MessageStatus.values.firstWhere((element) => element.name == map['status'])
     );
   }

@@ -51,22 +51,22 @@ class NewFirebaseMessageEvent extends ChattingEvent {
 
 class LocalMessageUpdateEvent extends ChattingEvent {
   final String chatId;
-  final String messageId;
+  final Message message;
   final MessageStatus status;
 
-  LocalMessageUpdateEvent(this.chatId, this.messageId, this.status);
+  LocalMessageUpdateEvent(this.chatId, this.message, this.status);
 
   @override
-  List<Object?> get props => [chatId, messageId, status];
+  List<Object?> get props => [chatId, message, status];
 }
 
 class FirebaseMessageUpdateEvent extends ChattingEvent {
   final String chatId;
-  final String messageId;
+  final Message message;
   final MessageStatus status;
 
-  FirebaseMessageUpdateEvent(this.chatId, this.messageId, this.status);
+  FirebaseMessageUpdateEvent(this.chatId, this.message, this.status);
 
   @override
-  List<Object?> get props => [chatId, messageId, status]; 
+  List<Object?> get props => [chatId, message, status]; 
 }

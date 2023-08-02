@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:whatsapp/packages/whatsapp_icons/lib/whatsapp_icons.dart';
+import 'package:whatsapp/presentation/widgets/unread_count_indicator.dart';
 
 
 class TabBarHeader extends SliverPersistentHeaderDelegate {
@@ -8,11 +9,16 @@ class TabBarHeader extends SliverPersistentHeaderDelegate {
   final double minHeight;
   final Color backgroundColor;
 
+  final ValueNotifier<int> unreadChatsCountNotifier;
+  final ValueNotifier<bool> newStatusUpdateNotifier;
+
   TabBarHeader({
     required this.tabController,
     this.maxHeight = 55,
     this.minHeight = 55,
     required this.backgroundColor,
+    required this.unreadChatsCountNotifier,
+    required this.newStatusUpdateNotifier,
   });
 
   
@@ -42,8 +48,21 @@ class TabBarHeader extends SliverPersistentHeaderDelegate {
           ),
           SizedBox(
             width: tabbarWidth,
-            child: const Tab(
-              text: "Chats",
+            child:  Tab(
+              // text: "Chats",
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  const Text("Chats"),
+                  const SizedBox(width: 4,),
+                  ValueListenableBuilder(
+                    valueListenable: unreadChatsCountNotifier,
+                    builder: (context, count, child) => count > 0
+                    ? UnreadCountIndicator(text: "$count")
+                    : const SizedBox(),
+                  )
+                ],
+              ),
             ),
           ),
           SizedBox(
